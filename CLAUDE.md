@@ -34,6 +34,7 @@ When asked to run a test plan:
 5. Generate a report in `test-reports/`
 
 ## Key Rules
+- **NEVER stop executing for no reason.** Once a test run has started, execute every step to completion without pausing to summarize or ask for confirmation between steps. Keep going until the entire workflow is done or a genuine blocker is hit.
 - Never guess — always snapshot the browser before acting
 - Never hardcode credentials in reports
 - On failure: screenshot, note what happened, continue to next test case

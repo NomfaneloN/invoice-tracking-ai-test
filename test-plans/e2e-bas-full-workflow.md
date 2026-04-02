@@ -25,16 +25,17 @@
 | URL         | https://pd-invtracking-adminportal-qa.azurewebsites.net/login        |
 | Prereqs     | Mode set to Latest before running any test.                           |
 | Last tested | 2026-04-02                                                            |
-| Status      | TC-01 to TC-07 PASS; TC-08 BLOCKED (no Submit button); TC-09–TC-13 NOT RUN |
+| Status      | TC-01 to TC-10 PASS; TC-11–TC-12 exception paths NOT RUN |
 
 ---
 
 ## Accounts Used
 | Role             | Username                          | Password | Used In                                          |
 |------------------|-----------------------------------|----------|--------------------------------------------------|
-| Finance Unit     | Thulilem                          | 123qwe   | TC-01, TC-02, TC-06, TC-07, TC-08, TC-09, TC-11, TC-13 |
-| Business Unit    | TaniaSmith                        | 123qwe   | TC-03, TC-05, TC-12                              |
-| Internal Control | Gwenb                             | 123qwe   | TC-10, TC-12                                     |
+| Finance Unit     | Thulilem                          | 123qwe   | TC-01, TC-02, TC-06, TC-07, TC-12                |
+| Business Unit    | TaniaSmith                        | 123qwe   | TC-03, TC-05, TC-11                              |
+| Internal Control | Gwenb                             | 123qwe   | TC-10, TC-11                                     |
+| Admin            | admin                             | 123qwe   | TC-08 (BAS Report Import), TC-09 (Payment Stub Import) |
 | Supplier         | Thulile.Matekanya@boxfusion.io    | 123qwe   | Reference only                                   |
 
 ---
@@ -57,7 +58,9 @@
 - **Prepare Voucher requires both an Outcome radio selection AND a 4-item Yes/No checklist** before Submit is enabled.
 - **Verify Voucher requires a Batch Number (required field) and a confirmation checkbox** before Submit is enabled. Owner is Thulilem (Finance Unit), not Gwenb (Internal Control).
 - **Authorise Invoice Voucher requires only a confirmation checkbox** before Submit is enabled. Step name in the test plan was "Approve Invoice" — actual name is "Authorise Invoice Voucher".
-- **[BUG] TC-08 "Upload Captured Invoices Report From BAS" has no Submit button**: The workflow action page renders the general record details view with only an "Other Documents" upload section and a Close button. The step cannot be completed via the UI. Raised as a defect — do not attempt until fixed.
+- **TC-08 requires admin login and BAS Report Import**: After TC-07 (Authorise Invoice Voucher), the "Upload Captured Invoices Report From BAS" step does NOT have a Submit button on the workflow action page. Instead, the BAS report must be uploaded via the **admin portal**: log in as `admin`, navigate to the **"BAS Report Import"** menu item, and upload the prepared BAS Payment Register Excel file. The Excel report must be updated before upload to match the record data captured on the system (blue-background columns: INV RECDTE, SOURCE DOC NUMBER, CAPTURE DATE, AUTH DATE, INV DATE, AMOUNT, PAYEE NAME). SOURCE DOC TYPE is always `SUNDRY`. CAPTURE ID and AUTHORISE ID use persal numbers already in the template. FUNC NO, ENT NUMBER, MICR NO, DISB NO, PAYMTD, and REGION remain unchanged.
+- **TC-09 requires admin login and Payment Stubs Import**: The "Attach Payment Stub" step is completed via the admin portal's **"Payment Stubs Import → Import Payment Stub"** menu. Before uploading, the payment stub text file must be updated with the correct SOURCE DOC NUMBER (Invoice No) and PAYMENT NUMBER, maintaining exact column alignment. After import, verify Payments Confirmed = 1 in the History tab.
+- **Capture Filing requires 3 fields + checkbox**: The "Capture Filing" step (TC-10, Gwenb) requires Batch Number, Box Number, and File Range (all required, marked with *), plus a confirmation checkbox. Submit is disabled until all fields are filled and the checkbox is checked.
 
 ---
 
@@ -292,109 +295,183 @@
 
 ---
 
-## TC-08: Upload Captured Invoices Report From BAS
-> **[BLOCKED 2026-04-02]** Step loads inline after TC-07 but has **no Submit button**. The workflow action page renders the general BAS request details view (`SAGov-BAS-request-for-payment-details v11`) with only an "Other Documents" upload section and a Close button. Uploading a file saves it to the record but does not advance the workflow. Clicking Close navigates back to the previous step. **This step is blocked pending a fix from the development team.**
+## TC-08: Upload Captured Invoices Report From BAS (via Admin BAS Report Import)
+> **[UPDATED 2026-04-02]** This step does NOT have a Submit button on the workflow action page. Instead, the BAS report must be uploaded through the admin portal's **"BAS Report Import"** menu. Before uploading, the BAS Payment Register Excel file must be updated to match the record data on the system.
 
-- **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit) — step loads inline after TC-07 submit
-- **Prereq:** TC-07 must pass
-- **Status:** BLOCKED — no Submit button on workflow action page
-- **Steps (when unblocked):**
-  1. After TC-07 submit, "Upload Captured Invoices Report From BAS" should load inline
-  2. Snapshot to confirm step heading and status "Approved"
-  3. Locate the report upload section
-  4. Upload a local file as the Captured Invoices Report from BAS
-  5. Snapshot to confirm the file is attached and Submit is enabled
-  6. Click Submit
-  7. Confirm any dialog if prompted
-  8. Verify the step completes and the workflow advances
-- **Expected result:** Captured invoices report is uploaded and the workflow advances
-- **Assertions:**
-  - [ ] Step heading "Upload Captured Invoices Report From BAS" shown, status "Approved"
-  - [ ] File upload field is present and accepts a local file
-  - [ ] **[FAILING 2026-04-02] Submit button is present** — currently absent; workflow cannot advance
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+- **Type:** Happy path (workflow — admin action)
+- **Login:** admin (Admin portal)
+- **Prereq:** TC-07 must pass; BAS Payment Register Excel template available
+- **BAS Report File:** `c:\Users\Promise\Downloads\BAS Payment Register for 17 MARCH 2026 2 2.xlsx`
 
----
+### Step A: Prepare the BAS Payment Register Excel
+Before uploading, update the **blue-background columns** in the Excel to match the system record:
 
-## TC-09: Upload the Final Authorised Invoices Report From BAS
-- **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-08 must pass
+| Column | Source | Notes |
+|--------|--------|-------|
+| INV RECDTE | Date Received from TC-01 | Format: YYYY-MM-DD |
+| SOURCE DOC NUMBER | Invoice No from TC-01 (e.g. ITS-E2E-001) | Must match exactly |
+| PAYSTA | AUTH | Always AUTH at this point |
+| PAYEE NAME | Supplier Name from TC-01 (e.g. Maake) | Must match exactly |
+| CAPTURE DATE | Date the record was captured (TC-01 date) | Format: YYYY-MM-DD |
+| AUTH DATE | Date the record was authorised (TC-07 date) | Format: YYYY-MM-DD |
+| INV DATE | Invoice Date from TC-01 | Format: YYYY-MM-DD |
+| SOURCE DOC TYPE | SUNDRY | Always SUNDRY for BAS |
+| AMOUNT | Invoice Amount from TC-01 (e.g. 2500) | Must match exactly |
+| CAPTURE ID | Persal number — keep existing value in template | Do not change |
+| AUTHORISE ID | Persal number — keep existing value in template | Do not change |
+| FUNC NO | Keep existing value in template | Do not change |
+| ENT NUMBER | Keep existing value in template | Do not change |
+
+- **Steps (Excel prep):**
+  1. Open the BAS Payment Register Excel file
+  2. Update row 10 blue columns: INV RECDTE, SOURCE DOC NUMBER, CAPTURE DATE, AUTH DATE, INV DATE, AMOUNT, PAYEE NAME to match the current test record
+  3. Confirm SOURCE DOC TYPE is SUNDRY
+  4. Confirm CAPTURE ID, AUTHORISE ID, FUNC NO, ENT NUMBER are unchanged
+  5. Save the file
+
+### Step B: Upload via Admin Portal
 - **Steps:**
-  1. Log in as `Thulilem` (if not already logged in)
-  2. Navigate to Inbox or My Items
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Upload the Final Authorised Invoices Report From BAS"
-  5. On the workflow action page, locate the report upload field
-  6. Upload a local file as the final authorised invoices report
-  7. Snapshot to confirm the file is attached and Submit is enabled
-  8. Click Submit
-  9. Confirm any dialog if prompted
-  10. Verify the step completes and the workflow advances
-- **Expected result:** Final authorised invoices report is uploaded and the workflow advances
+  1. Navigate to the login page: https://pd-invtracking-adminportal-qa.azurewebsites.net/login
+  2. Log in as `admin` with password `123qwe`
+  3. Verify login successful — admin dashboard loads
+  4. Navigate to the **"BAS Report Import"** menu item (look in the sidebar/navigation)
+  5. Snapshot to confirm the BAS Report Import page loads
+  6. Locate the file upload field on the BAS Report Import page
+  7. Upload the prepared BAS Payment Register Excel file
+  8. Snapshot to confirm the file is uploaded
+  9. Click Submit / Import (or equivalent action button)
+  10. Snapshot to confirm the import completes without errors
+  11. Verify the record (by Ref No or Invoice No) has been processed
+
+### Step C: Verify Import in History Tab
+- **Steps:**
+  1. After clicking Import, click the **"History"** tab on the BAS Report Import page
+  2. Locate the most recent import row (top of the table)
+  3. Check the **"Payments Authorised"** column — it must equal the number of data rows in the Excel (e.g. **1** for a single-row report)
+  4. If Payments Authorised is **0**, the import did not match any records — check the log file for details and verify the Excel data matches the system
+  5. If Payments Authorised is **1** (or the expected count), the import succeeded
+
+### Step D: Verify Workflow Advanced
+- **Steps:**
+  1. Log out of admin
+  2. Log in as `Thulilem` with password `123qwe`
+  3. Navigate to My Items
+  4. Search for the record by Ref No
+  5. Verify the workflow has advanced past "Upload Captured Invoices Report From BAS"
+  6. Note the new current workflow step and status
+
+- **Expected result:** BAS Payment Register is prepared with matching data, uploaded via admin BAS Report Import, and the workflow advances past TC-08
 - **Assertions:**
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Upload the Final Authorised Invoices Report From BAS" is shown
-  - [ ] File upload field is present and accepts a local file
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] Excel file updated with correct system data (blue columns)
+  - [ ] Admin login successful
+  - [ ] BAS Report Import menu item found and page loads
+  - [ ] File upload field present on BAS Report Import page
+  - [ ] Excel file uploaded successfully
+  - [ ] Import completes without errors
+  - [ ] History tab shows Payments Authorised = 1 (matching the number of data rows)
+  - [ ] Workflow advances past "Upload Captured Invoices Report From BAS" after import
+  - [ ] Record visible in Thulilem's My Items at the next workflow step or with updated status
 
 ---
 
-## TC-10: Capture Filling
+## TC-09: Attach Payment Stub (via Admin Payment Stubs Import)
+> **[UPDATED 2026-04-02]** The "Attach Payment Stub" step is completed via the admin portal's **"Payment Stubs Import"** menu, similar to TC-08. Before uploading, the payment stub text file must be updated to match the record data.
+
+- **Type:** Happy path (workflow — admin action)
+- **Login:** admin (Admin portal)
+- **Prereq:** TC-08 must pass; Payment Stub text file template available
+- **Payment Stub File:** `c:\Users\Promise\Downloads\training STUB (1).txt`
+
+### Step A: Verify Current Step is "Attach Payment Stub"
+- **Steps:**
+  1. Log in as `Thulilem` with password `123qwe`
+  2. Navigate to Inbox
+  3. Search for the record by Ref No
+  4. Verify the Action Required column shows **"Attach Payment Stub"** and status is **"Authorized"**
+
+### Step B: Prepare the Payment Stub File
+Before uploading, update the payment stub text file to match the system record. Maintain the exact column alignment of the original file.
+
+| Field | Source | Notes |
+|-------|--------|-------|
+| SOURCE DOC NUMBER | Invoice No from TC-01 (e.g. ITS-E2E-002) | Must match exactly |
+| PAYMENT NUMBER | Payment number from the system | Keep existing if unchanged |
+
+- **Steps:**
+  1. Open the payment stub text file
+  2. Update the SOURCE DOC NUMBER (line 21) to match the Invoice No from TC-01
+  3. Verify the PAYMENT NUMBER is correct
+  4. Ensure column alignment is maintained — do not shift any text
+  5. Save the file
+
+### Step C: Upload via Admin Portal
+- **Steps:**
+  1. Navigate to the login page and log in as `admin` with password `123qwe`
+  2. Navigate to **"Payment Stubs Import" → "Import Payment Stub"** in the sidebar (or go directly to `/dynamic/Shesha.SaGovInvoiceTracking/SaGov-payment-stub-imports`)
+  3. Snapshot to confirm the Payment Stub Import page loads
+  4. Click the upload button and select the prepared payment stub text file
+  5. Snapshot to confirm the file is uploaded
+  6. Click **Import**
+  7. Click the **"History"** tab
+  8. Locate the most recent import row (top of the table)
+  9. Check the **"Payments Confirmed"** column — it must equal **1**
+  10. If Payments Confirmed is **0**, the import did not match — check the log file and verify the stub data
+
+### Step D: Verify Workflow Advanced
+- **Steps:**
+  1. Log in as `Gwenb` with password `123qwe`
+  2. Navigate to Inbox
+  3. Search for the record by Ref No
+  4. Verify the Action Required column shows **"Capture Filing"** and status is **"Paid"**
+
+- **Expected result:** Payment stub is imported via admin, "Attach Payment Stub" step completes, and the workflow advances to "Capture Filing"
+- **Assertions:**
+  - [ ] Current step is "Attach Payment Stub" before import
+  - [ ] Payment stub file updated with correct SOURCE DOC NUMBER
+  - [ ] Admin login successful
+  - [ ] Payment Stub Import page loads
+  - [ ] File uploaded successfully
+  - [ ] Import completes without errors
+  - [ ] History tab shows Payments Confirmed = 1
+  - [ ] Workflow advances to "Capture Filing" after import
+  - [ ] Record visible in Gwenb's Inbox with Action Required "Capture Filing" and status "Paid"
+
+---
+
+## TC-10: Capture Filing
+> **[UPDATED 2026-04-02]** Step requires three filing detail fields (Batch Number, Box Number, File Range — all required) and a confirmation checkbox.
+
 - **Type:** Happy path (workflow)
 - **Login:** Gwenb (Internal Control)
 - **Prereq:** TC-09 must pass
 - **Steps:**
-  1. Log in as `Gwenb` (if not already logged in)
+  1. Log in as `Gwenb` with password `123qwe` (if not already logged in)
   2. Navigate to Inbox
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Capture Filling"
-  5. Complete any required fields on the workflow action page
-  6. Snapshot to confirm Submit is enabled
-  7. Click Submit
-  8. Confirm any dialog if prompted
-  9. Verify the step completes and the workflow advances
-- **Expected result:** Filling is captured and the workflow advances to the final step
+  3. Search for the record by Ref No
+  4. Click the search icon to open the workflow action
+  5. Snapshot to confirm step heading is **"Capture Filing"** and status is **"Paid"**
+  6. Under **"Filing Details"**, fill the following required fields:
+     - **Batch Number** (e.g. `BATCH-E2E-002`)
+     - **Box Number** (e.g. `BOX-001`)
+     - **File Range** (e.g. `A-Z`)
+  7. Check the confirmation checkbox: "I confirm that I have captured all the filing details under which the invoice is stored."
+  8. Snapshot to confirm Submit is now enabled
+  9. Click Submit
+  10. Confirm any dialog if prompted
+  11. Verify the workflow completes — record should no longer be in Gwenb's queue
+- **Expected result:** Filing details are captured, confirmation checkbox checked, and the workflow is complete
 - **Assertions:**
-  - [ ] Record is visible in Gwenb's Inbox
-  - [ ] Workflow step "Capture Filling" is shown
+  - [ ] Record is visible in Gwenb's Inbox with Action Required "Capture Filing"
+  - [ ] Step heading "Capture Filing" shown, status "Paid"
+  - [ ] Filing Details section present with Batch Number, Box Number, File Range (all required)
+  - [ ] Confirmation checkbox present
+  - [ ] Submit disabled until all fields filled and checkbox checked
   - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] Record no longer in Gwenb's queue after submit
 
 ---
 
-## TC-11: Attach Payment Stub
-- **Type:** Happy path (workflow — final step)
-- **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-10 must pass
-- **Steps:**
-  1. Log in as `Thulilem` (if not already logged in)
-  2. Navigate to Inbox or My Items
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Attach Payment Stub"
-  5. On the workflow action page, locate the payment stub upload field
-  6. Upload a local file as the payment stub
-  7. Snapshot to confirm the file is attached and Submit is enabled
-  8. Click Submit
-  9. Confirm any dialog if prompted
-  10. Verify the record status updates to "Paid"
-  11. Verify the workflow progress bar shows all steps complete
-- **Expected result:** Payment stub is attached, record status changes to "Paid", and the full workflow is complete
-- **Assertions:**
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Attach Payment Stub" is shown
-  - [ ] Payment stub file upload field is present and accepts a local file
-  - [ ] Submit completes without errors
-  - [ ] Record status updates to "Paid"
-  - [ ] Workflow progress bar shows all steps complete
-  - [ ] No further workflow actions are available
-
----
-
-## TC-12: Manage Supplier Related Queries
+## TC-11: Manage Supplier Related Queries
 - **Type:** Exception path
 - **Login:** TaniaSmith (Business Unit)
 - **Steps:**
@@ -421,7 +498,7 @@
 
 ---
 
-## TC-13: Review Rejected Invoice
+## TC-12: Review Rejected Invoice
 - **Type:** Exception path
 - **Login:** Thulilem (Finance Unit)
 - **Steps:**

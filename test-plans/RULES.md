@@ -8,6 +8,9 @@
 
 ## During Testing
 
+### Continuous Execution
+- **NEVER stop executing for no reason.** Once a test run has started, execute every step to completion without pausing to summarize or ask for confirmation between steps. Keep going until the entire workflow is done or a genuine blocker is hit.
+
 ### Navigation
 - Snapshot before every action to see current state
 - Never assume a page has loaded — verify with a snapshot
