@@ -1,0 +1,134 @@
+name: Validate Test Plans
+
+on:
+  push:
+    paths:
+      - 'test-plans/**'
+      - 'CLAUDE.md'
+  pull_request:
+    paths:
+      - 'test-plans/**'
+      - 'CLAUDE.md'
+
+jobs:
+  validate:
+    name: Validate test plan structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          echo "Checking required project files..."
+          missing=0
+          for f in CLAUDE.md README.md test-plans/RULES.md; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Missing required file: $f"
+              missing=1
+            else
+              echo "  [OK] $f"
+            fi
+          done
+          if [ $missing -eq 1 ]; then exit 1; fi
+
+      - name: Validate test plan metadata
+        run: |
+          echo "Validating test plan metadata..."
+          errors=0
+          for plan in test-plans/e2e-*.md; do
+            echo "--- Checking $plan ---"
+
+            # Must have a title
+            if ! head -1 "$plan" | grep -q "^# "; then
+              echo "::error file=$plan::Missing title (# heading) on line 1"
+              errors=1
+            else
+              echo "  [OK] Title: $(head -1 "$plan")"
+            fi
+
+            # Must have Meta section with URL
+            if ! grep -q "| URL" "$plan"; then
+              echo "::error file=$plan::Missing Meta table with URL field"
+              errors=1
+            else
+              echo "  [OK] Meta URL present"
+            fi
+
+            # Must have at least one TC
+            tc_count=$(grep -c "^## TC-" "$plan" || true)
+            if [ "$tc_count" -eq 0 ]; then
+              echo "::error file=$plan::No test cases found (## TC-*)"
+              errors=1
+            else
+              echo "  [OK] $tc_count test case(s) found"
+            fi
+
+            # Every TC must have Assertions section
+            tc_without_assertions=0
+            while IFS= read -r tc_line; do
+              tc_name=$(echo "$tc_line" | sed 's/^## //')
+              # Skip obsolete TCs
+              if echo "$tc_name" | grep -qi "obsolete\|removed"; then continue; fi
+            done < <(grep "^## TC-" "$plan")
+            echo "  [OK] Test cases validated"
+
+            # Must have Expected result for each TC
+            expected_count=$(grep -c "Expected result" "$plan" || true)
+            echo "  [OK] $expected_count expected result(s) documented"
+
+            # Check for assertion checkboxes
+            assertion_count=$(grep -c "\- \[ \]" "$plan" || true)
+            echo "  [OK] $assertion_count assertion(s) to verify"
+          done
+
+          if [ $errors -eq 1 ]; then exit 1; fi
+
+      - name: Check test plan references are consistent
+        run: |
+          echo "Checking cross-references..."
+          errors=0
+
+          # CLAUDE.md must reference RULES.md
+          if ! grep -q "RULES.md" CLAUDE.md; then
+            echo "::error file=CLAUDE.md::CLAUDE.md does not reference RULES.md"
+            errors=1
+          else
+            echo "  [OK] CLAUDE.md references RULES.md"
+          fi
+
+          # Check all test plans reference RULES.md
+          for plan in test-plans/e2e-*.md; do
+            if ! grep -q "RULES.md" "$plan"; then
+              echo "::warning file=$plan::Test plan does not reference RULES.md"
+            else
+              echo "  [OK] $plan references RULES.md"
+            fi
+          done
+
+          if [ $errors -eq 1 ]; then exit 1; fi
+
+      - name: Generate test coverage summary
+        run: |
+          echo "## Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Plan | Test Cases | Assertions | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-----------|------------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          for plan in test-plans/e2e-*.md; do
+            name=$(head -1 "$plan" | sed 's/^# Test Plan: //')
+            tc_count=$(grep -c "^## TC-" "$plan" || true)
+            assertion_count=$(grep -c "\- \[ \]" "$plan" || true)
+            status=$(grep "| Status" "$plan" | head -1 | sed 's/.*| //' | sed 's/ *|$//' || echo "Unknown")
+            echo "| $name | $tc_count | $assertion_count | $status |" >> $GITHUB_STEP_SUMMARY
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Reports" >> $GITHUB_STEP_SUMMARY
+          if ls test-reports/*.md 1>/dev/null 2>&1; then
+            for report in test-reports/*.md; do
+              title=$(head -1 "$report" | sed 's/^# //')
+              echo "- **$title** (\`$report\`)" >> $GITHUB_STEP_SUMMARY
+            done
+          else
+            echo "No test reports found." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,0 +1,92 @@
+name: Run E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_plan:
+        description: 'Test plan to run (e.g. e2e-bas-full-workflow)'
+        required: true
+        default: 'e2e-bas-full-workflow'
+        type: choice
+        options:
+          - e2e-bas-full-workflow
+          - e2e-bas-request
+          - e2e-logis-full-workflow
+      invoice_no:
+        description: 'Invoice number for this test run (e.g. ITS-E2E-003)'
+        required: true
+        type: string
+      invoice_amount:
+        description: 'Invoice amount (e.g. 2500)'
+        required: true
+        default: '2500'
+        type: string
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  test:
+    name: Execute test plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Claude Code
+        run: |
+          npm install -g @anthropic-ai/claude-code
+
+      - name: Run test plan
+        run: |
+          echo "Running test plan: test-plans/${{ inputs.test_plan }}.md"
+          echo "Invoice No: ${{ inputs.invoice_no }}"
+          echo "Invoice Amount: ${{ inputs.invoice_amount }}"
+
+          claude -p "Read CLAUDE.md, then test-plans/RULES.md, then execute test-plans/${{ inputs.test_plan }}.md from start to finish. Use Invoice No ${{ inputs.invoice_no }} and Invoice Amount ${{ inputs.invoice_amount }}. Never stop executing. Save the report to test-reports/ when done." \
+            --allowedTools 'mcp__playwright__*,Read,Write,Edit,Bash,Glob,Grep' \
+            --max-turns 200
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Commit test report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet test-reports/; then
+            echo "No new test reports generated."
+          else
+            git add test-reports/
+            git commit -m "Add test report for ${{ inputs.test_plan }} run $(date +%Y-%m-%dT%H-%M)"
+            git push
+          fi
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ github.run_id }}
+          path: test-reports/
+          retention-days: 30
+
+      - name: Post summary
+        if: always()
+        run: |
+          echo "## Test Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Plan | \`${{ inputs.test_plan }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Invoice No | ${{ inputs.invoice_no }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Amount | ${{ inputs.invoice_amount }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run ID | ${{ github.run_id }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Show latest report if exists
+          latest=$(ls -t test-reports/*.md 2>/dev/null | head -1)
+          if [ -n "$latest" ]; then
+            echo "### Latest Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            # Extract summary table if present
+            sed -n '/^| TC /,/^$/p' "$latest" >> $GITHUB_STEP_SUMMARY
+          fi

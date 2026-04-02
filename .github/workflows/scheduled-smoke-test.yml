@@ -1,0 +1,62 @@
+name: Scheduled Smoke Test
+
+on:
+  schedule:
+    # Run every weekday at 6:00 AM SAST (4:00 AM UTC)
+    - cron: '0 4 * * 1-5'
+  workflow_dispatch:
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+jobs:
+  smoke-test:
+    name: Daily smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Claude Code
+        run: |
+          npm install -g @anthropic-ai/claude-code
+
+      - name: Run smoke test (TC-01 only)
+        run: |
+          INVOICE_NO="SMOKE-$(date +%Y%m%d)"
+
+          claude -p "Read CLAUDE.md, then test-plans/RULES.md. Execute ONLY TC-01 from test-plans/e2e-bas-full-workflow.md as a smoke test. Use Invoice No $INVOICE_NO and Invoice Amount 100. Login as Thulilem, create a new BAS Request, fill the form, and submit. Verify the next step loads. Save a brief report to test-reports/smoke-$(date +%Y-%m-%dT%H-%M).md. Do not continue past TC-01." \
+            --allowedTools 'mcp__playwright__*,Read,Write,Edit,Bash,Glob,Grep' \
+            --max-turns 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Commit smoke test report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add test-reports/ 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Add smoke test report $(date +%Y-%m-%dT%H-%M)"
+            git push
+          fi
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-${{ github.run_id }}
+          path: test-reports/
+          retention-days: 14
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Smoke test FAILED — the QA environment may be down or the login flow is broken."
+          echo "## Smoke Test FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The daily smoke test could not complete TC-01 (Register and Upload Invoice)." >> $GITHUB_STEP_SUMMARY
+          echo "This may indicate:" >> $GITHUB_STEP_SUMMARY
+          echo "- QA environment is down" >> $GITHUB_STEP_SUMMARY
+          echo "- Login flow is broken" >> $GITHUB_STEP_SUMMARY
+          echo "- Form structure has changed" >> $GITHUB_STEP_SUMMARY
