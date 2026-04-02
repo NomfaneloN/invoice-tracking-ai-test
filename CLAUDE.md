@@ -41,3 +41,11 @@ When asked to run a test plan:
 - Every assertion must be explicitly checked and marked pass/fail
 - Reuse existing test data — don't create new records unless required
 - NEVER generate Playwright, Cypress, Selenium, or any test framework code
+
+## Report Requirements
+Every test report MUST include:
+- **Run Metrics Table** at the top: total duration, pass/fail/skip counts, UI/UX issue count, estimated API cost
+- **Per-TC timing**: start time, end time, duration for each test case
+- **UI/UX Issues section**: every visual, layout, labelling, or usability problem observed — even on passing TCs. Rate severity (Critical/High/Medium/Low)
+- **Performance Observations**: any page loads >3s, slow transitions, spinner delays
+- See `test-plans/RULES.md` for full report format specification
