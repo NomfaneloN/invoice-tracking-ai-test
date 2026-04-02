@@ -1,4 +1,4 @@
-# ITS Shesha3 — E2E Test Suite
+# Invoice Tracking AI Test
 
 Automated end-to-end testing for the **ITS Invoice Tracking System (Shesha3)** — a government payment workflow application built on the [Shesha](https://docs.shesha.io/) framework.
 

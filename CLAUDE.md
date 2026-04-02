@@ -1,4 +1,4 @@
-# CLAUDE.md – Markdown-Driven Testing
+# CLAUDE.md – Invoice Tracking AI Test
 
 This project uses markdown files to define and execute tests.
 No scripts — Claude drives the browser directly from test plan definitions using MCP browser tools.
