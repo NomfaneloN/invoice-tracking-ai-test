@@ -24,17 +24,17 @@
 | Module      | BAS Request for Payment — Full Workflow                               |
 | URL         | https://pd-invtracking-adminportal-qa.azurewebsites.net/login        |
 | Prereqs     | Mode set to Latest before running any test.                           |
-| Last tested | Not yet tested                                                        |
-| Status      | Not yet tested                                                        |
+| Last tested | 2026-04-02                                                            |
+| Status      | TC-01 to TC-07 PASS; TC-08 BLOCKED (no Submit button); TC-09–TC-13 NOT RUN |
 
 ---
 
 ## Accounts Used
 | Role             | Username                          | Password | Used In                                          |
 |------------------|-----------------------------------|----------|--------------------------------------------------|
-| Finance Unit     | Thulilem                          | 123qwe   | TC-01, TC-02, TC-04, TC-05, TC-07, TC-08, TC-09, TC-11 |
-| Business Unit    | TaniaSmith                        | 123qwe   | TC-03, TC-06, TC-12                              |
-| Internal Control | Gwenb                             | 123qwe   | TC-06, TC-10, TC-12                              |
+| Finance Unit     | Thulilem                          | 123qwe   | TC-01, TC-02, TC-06, TC-07, TC-08, TC-09, TC-11, TC-13 |
+| Business Unit    | TaniaSmith                        | 123qwe   | TC-03, TC-05, TC-12                              |
+| Internal Control | Gwenb                             | 123qwe   | TC-10, TC-12                                     |
 | Supplier         | Thulile.Matekanya@boxfusion.io    | 123qwe   | Reference only                                   |
 
 ---
@@ -46,6 +46,18 @@
 - **Draft record created on form open.** The application creates and persists a Draft record (with a Ref No) the moment "Create New → BAS Request For Payment" is clicked, before any fields are filled. Closing without submitting leaves an orphaned Draft in the Drafts section.
 - **Submit button is disabled** when required fields are empty. This is the primary validation mechanism — there are no field-level inline error messages.
 - **Workflow steps may require selecting an assignee** before Submit is enabled. Always snapshot the workflow action page and check for required fields before clicking Submit.
+- **Mode switcher UI shows "Live"** even when the mode is correctly set to "Latest" (stored in localStorage as `CONFIGURATION_ITEM_MODE="latest"`). The badge label is a display bug — the actual mode is Latest.
+- **Post-submit navigation varies by step**: Some steps load the next step inline; others redirect to My Items. Do not assume consistent post-submit behaviour.
+- **File-to-PDF conversion**: Any file uploaded as an invoice attachment is automatically converted to PDF by the server after submission. The file is stored as `.pdf` regardless of original format.
+- **Attachment file size grows across steps**: The PDF attachment may be re-processed on each workflow step, resulting in an increased file size in the details view.
+- **Total Amount shows "R 0" or "R undefined" during page transition** on some workflow steps. This is a transient loading bug — the correct amount loads after a brief delay.
+- **Inbox page is titled "Incoming Items"** (not "Inbox"). Access via the Inbox nav link.
+- **Create New dropdown has two options**: "BAS Request For Payment" and "test-workflow". Always select "BAS Request For Payment".
+- **Certify Invoice requires a radio selection** (satisfactory / not satisfactory) before Submit is enabled.
+- **Prepare Voucher requires both an Outcome radio selection AND a 4-item Yes/No checklist** before Submit is enabled.
+- **Verify Voucher requires a Batch Number (required field) and a confirmation checkbox** before Submit is enabled. Owner is Thulilem (Finance Unit), not Gwenb (Internal Control).
+- **Authorise Invoice Voucher requires only a confirmation checkbox** before Submit is enabled. Step name in the test plan was "Approve Invoice" — actual name is "Authorise Invoice Voucher".
+- **[BUG] TC-08 "Upload Captured Invoices Report From BAS" has no Submit button**: The workflow action page renders the general record details view with only an "Other Documents" upload section and a Close button. The step cannot be completed via the UI. Raised as a defect — do not attempt until fixed.
 
 ---
 
@@ -58,7 +70,7 @@
   2. Fill Username with `Thulilem` and Password with `123qwe`
   3. Click Login
   4. Verify login was successful (dashboard loads)
-  5. Locate the mode switcher and confirm mode is set to Latest (set it if not already)
+  5. Confirm mode is Latest — the UI badge may show "Live" even when correctly set. Verify via browser localStorage key `CONFIGURATION_ITEM_MODE` = `"latest"` if needed.
   6. Navigate to My Items
   7. Click "Create New" and select "BAS Request For Payment" from the dropdown
   8. Verify form opens (title: "Register and Upload Invoice:", status: Draft, Ref No assigned)
@@ -73,9 +85,9 @@
   17. Click the plus-circle button to confirm the invoice row
   18. Verify the invoice row appears in the table and Total Amount updates
   19. Click Submit
-  20. Verify redirect to My Items
-  21. Verify the new record appears at the top of the list with status "Received"
-  22. Note the Ref No for use in subsequent TCs
+  20. **After Submit, the next workflow step loads inline — the app does NOT redirect to My Items.** Note the step title and status shown.
+  21. Verify status shown on the next step header is "Received"
+  22. Note the Ref No shown on the page for use in subsequent TCs
 - **Input data:**
   | Field                  | Value               | Type                          |
   |------------------------|---------------------|-------------------------------|
@@ -99,182 +111,208 @@
   - [ ] Invoice Attachment uploaded successfully
   - [ ] Total Amount reflects 2500
   - [ ] Form submits without errors
-  - [ ] New record appears in My Items with status "Received"
+  - [ ] Next workflow step loads inline — status shown as "Received"
 
 ---
 
-## TC-02: Assign Responsible Person to Certify Invoice
+## TC-02: Assign Branch Finance Admin To Assign Certifier
+> **[UPDATED 2026-04-02]** Step name and field label have changed. Previously documented as "Assign Responsible Person to Certify Invoice" with field "Responsible Person". Actual step is "Assign Branch Finance Admin To Assign Certifier" with field "Branch Finance Admin".
+
 - **Type:** Happy path (workflow)
 - **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-01 must pass — use the record created there
+- **Prereq:** TC-01 must pass — the next step loads inline after TC-01 submit
 - **Steps:**
-  1. Navigate to the login page and log in as `Thulilem` (if not already logged in)
-  2. Navigate to My Items
-  3. Locate the record created in TC-01 and open it
-  4. Snapshot to confirm current workflow step is "Assign Person to Certify Invoice"
-  5. On the workflow action page, locate the responsible person assignment field
-  6. Select `TaniaSmith` as the responsible person
-  7. Snapshot to confirm the selection and that Submit is now enabled
-  8. Click Submit
-  9. Confirm any dialog if prompted
-  10. Navigate back to My Items
-  11. Locate the record and verify the workflow step has advanced
-- **Expected result:** "Assign Person to Certify Invoice" step completes, TaniaSmith is assigned, and the workflow advances to the next step
+  1. After TC-01 submit, the step "Assign Branch Finance Admin To Assign Certifier" loads inline
+  2. Snapshot to confirm step heading is "Assign Branch Finance Admin To Assign Certifier" and status is "Received"
+  3. Locate the **"Branch Finance Admin"** combobox field
+  4. Type `Tania` and select `Tania Smith` from the dropdown
+  5. Snapshot to confirm selection and that Submit is now enabled
+  6. Click Submit
+  7. Confirm any dialog if prompted
+  8. Verify the app redirects to **My Items** (post-submit from this step goes to My Items, not inline)
+  9. Locate PAY4718/2026 at the top of My Items list with status "Received"
+- **Expected result:** "Assign Branch Finance Admin To Assign Certifier" step completes, Tania Smith is assigned, and the app redirects to My Items
 - **Assertions:**
-  - [ ] Workflow action page loads with step "Assign Person to Certify Invoice" visible
-  - [ ] Responsible person field is present and TaniaSmith can be selected
+  - [ ] Step heading shows "Assign Branch Finance Admin To Assign Certifier"
+  - [ ] "Branch Finance Admin" field is present and Tania Smith can be selected
   - [ ] Submit becomes enabled after selection
   - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
-  - [ ] Progress bar reflects advancement
+  - [ ] App redirects to My Items after Submit
+  - [ ] Record visible in My Items with status "Received"
 
 ---
 
-## TC-03: Certify Invoice
+## TC-03: Assign Responsible Person to Certify Invoice + Certify Invoice
+> **[UPDATED 2026-04-02]** Previously a single step "Certify Invoice". Now split into two sequential steps, both performed by TaniaSmith: (A) Assign the certifier, then (B) Certify.
+
 - **Type:** Happy path (workflow)
 - **Login:** TaniaSmith (Business Unit)
 - **Prereq:** TC-02 must pass
+
+### TC-03a: Assign Responsible Person to Certify Invoice
 - **Steps:**
   1. Navigate to the login page and log in as `TaniaSmith` with password `123qwe`
-  2. Verify login successful
-  3. Navigate to Inbox
-  4. Locate the TC-01 record (use the Ref No noted in TC-01)
-  5. Open the record
-  6. Snapshot to confirm the current workflow step is "Certify Invoice"
-  7. Complete any required fields on the workflow action page
-  8. Snapshot to confirm Submit is enabled
-  9. Click Submit
-  10. Confirm any dialog if prompted
-  11. Verify the step completes and the workflow advances
-- **Expected result:** Invoice is certified by TaniaSmith and the workflow advances to the next step
+  2. Verify login successful — header shows "Tania Smith"
+  3. Navigate to **Inbox** ("Incoming Items" page title)
+  4. Locate the TC-01 record by Ref No — "Action Required" column shows "Assign Responsible Person to Certify Invoice"
+  5. Click the search icon to open the workflow action
+  6. Snapshot to confirm step heading is "Assign Responsible Person to Certify Invoice"
+  7. Locate the **"Official"** combobox field
+  8. Type `Tania` and select `Tania Smith` from the dropdown
+  9. Snapshot to confirm Submit is enabled
+  10. Click Submit
+  11. Confirm any dialog if prompted
+  12. Verify the "Certify Invoice" step loads **inline** (no redirect)
+
+### TC-03b: Certify Invoice
+- **Steps (continuing from TC-03a, inline):**
+  1. Snapshot to confirm step heading is "Certify Invoice" and status is "Received"
+  2. Under **"Business Unit Responses"**, select the appropriate radio button:
+     - For happy path: "Goods and Service has been delivered satisfactory - Invoice should be paid"
+  3. Snapshot to confirm Submit is now enabled
+  4. Click Submit
+  5. Confirm any dialog if prompted
+  6. Verify the "Prepare Voucher" step loads **inline**
+  7. Verify status updates to **"Certified"**
+
+- **Expected result:** Both sub-steps complete — certifier is assigned, invoice is certified, status is "Certified", workflow advances to Prepare Voucher
 - **Assertions:**
   - [ ] Login as TaniaSmith successful
-  - [ ] Record is visible in TaniaSmith's Inbox
-  - [ ] Workflow step "Certify Invoice" is shown
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] Record visible in Inbox with Action Required "Assign Responsible Person to Certify Invoice"
+  - [ ] TC-03a: Step heading "Assign Responsible Person to Certify Invoice" shown
+  - [ ] TC-03a: "Official" field present and Tania Smith selectable
+  - [ ] TC-03a: Submit enabled and completes without errors
+  - [ ] TC-03a: "Certify Invoice" loads inline after submit
+  - [ ] TC-03b: Radio buttons for Business Unit Responses visible
+  - [ ] TC-03b: Submit enabled after radio selection
+  - [ ] TC-03b: Submit completes without errors
+  - [ ] TC-03b: Status updates to "Certified"
+  - [ ] TC-03b: "Prepare Voucher" loads inline after submit
 
 ---
 
-## TC-04: Assign Responsible Person to Verify Invoice
-- **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-03 must pass
-- **Steps:**
-  1. Navigate to the login page and log in as `Thulilem` with password `123qwe`
-  2. Verify login successful
-  3. Navigate to Inbox or My Items
-  4. Locate the TC-01 record and open it
-  5. Snapshot to confirm the current workflow step is "Assign Responsible Person to Verify Invoice"
-  6. On the workflow action page, locate the responsible person assignment field
-  7. Select the appropriate responsible person
-  8. Snapshot to confirm the selection and that Submit is now enabled
-  9. Click Submit
-  10. Confirm any dialog if prompted
-  11. Verify the step completes and the workflow advances
-- **Expected result:** Responsible person for verification is assigned and the workflow advances
-- **Assertions:**
-  - [ ] Login as Thulilem successful
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step for assigning verifier is shown
-  - [ ] Responsible person field is present and selectable
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+## TC-04: ~~Assign Responsible Person to Verify Invoice~~ — OBSOLETE
+> **[REMOVED 2026-04-02]** This step no longer exists in the BAS workflow. During the 2026-04-02 test run, the workflow proceeded directly from "Certify Invoice" to "Prepare Voucher" — the "Assign Responsible Person to Verify Invoice" step (Thulilem, Finance Unit) was absent. Confirm with the development team whether this step has been removed or is pending reimplementation.
+
+- **Status:** Obsolete — skip this TC until confirmed with dev/business team
 
 ---
 
 ## TC-05: Prepare Voucher
+> **[UPDATED 2026-04-02]** Step owner changed from Thulilem (Finance Unit) to TaniaSmith (Business Unit). Step now has an Outcome radio (4 options) and a 4-item Yes/No Business Unit Response checklist. Step loads inline after TC-03b submit.
+
 - **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-04 must pass
+- **Login:** TaniaSmith (Business Unit) — step loads inline after Certify Invoice
+- **Prereq:** TC-03b must pass
 - **Steps:**
-  1. Log in as `Thulilem` (if not already logged in)
-  2. Navigate to Inbox or My Items
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Prepare Voucher"
-  5. Complete any required fields on the workflow action page
-  6. Snapshot to confirm Submit is enabled
-  7. Click Submit
-  8. Confirm any dialog if prompted
-  9. Verify the step completes and the workflow advances
-- **Expected result:** Voucher is prepared and the workflow advances to the next step
+  1. After TC-03b submit, the "Prepare Voucher" step loads **inline**
+  2. Snapshot to confirm step heading is "Prepare Voucher" and status is "Certified"
+  3. Under **"Outcome"**, select: `Verification is complete`
+  4. Under **"Business Unit Response"**, answer all 4 checklist items with **Yes**:
+     - "Received ALL the different supporting documents."
+     - "Prepare a payment voucher pack using a checklist of ALL documents needed..."
+     - "Confirms the work performed on the Invoice Tracking system ready for transfer..."
+     - "Reconcile the physical list of Vouchers prepared..."
+  5. Snapshot to confirm Submit is now enabled
+  6. Click Submit
+  7. Confirm any dialog if prompted
+  8. Verify the app redirects to **My Items**
+  9. The record is no longer in TaniaSmith's queue (passed to next owner)
+- **Expected result:** Voucher is prepared, all checklist items answered Yes, and the workflow advances
 - **Assertions:**
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Prepare Voucher" is shown
-  - [ ] All required fields on the workflow action page are filled
+  - [ ] Step heading "Prepare Voucher" shown with status "Certified"
+  - [ ] "Outcome" radio buttons present with 4 options
+  - [ ] "Business Unit Response" checklist present with 4 Yes/No questions
+  - [ ] Submit enabled after Outcome selected and all checklist items answered
   - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] App redirects to My Items after Submit
+  - [ ] Record no longer in TaniaSmith's queue
 
 ---
 
 ## TC-06: Verify Voucher
+> **[UPDATED 2026-04-02]** Owner changed from Gwenb (Internal Control) to Thulilem (Finance Unit). Step now requires a Batch Number field (required) and a confirmation checkbox. Post-submit loads next step inline.
+
 - **Type:** Happy path (workflow)
-- **Login:** Gwenb (Internal Control)
+- **Login:** Thulilem (Finance Unit)
 - **Prereq:** TC-05 must pass
 - **Steps:**
-  1. Navigate to the login page and log in as `Gwenb` with password `123qwe`
-  2. Verify login successful
-  3. Navigate to Inbox
-  4. Locate the TC-01 record and open it
-  5. Snapshot to confirm the current workflow step is "Verify Voucher"
-  6. Complete any required fields on the workflow action page
-  7. Snapshot to confirm Submit is enabled
-  8. Click Submit
-  9. Confirm any dialog if prompted
-  10. Verify the step completes and the workflow advances
-- **Expected result:** Voucher is verified by Internal Control and the workflow advances
+  1. Log in as `Thulilem` with password `123qwe` (if not already logged in)
+  2. Verify login successful — header shows "Thulile Matekanya"
+  3. Navigate to **Inbox** ("Incoming Items")
+  4. Search for the TC-01 record by Ref No — "Action Required" column shows "Verify Voucher"
+  5. Click the search icon to open the workflow action
+  6. Snapshot to confirm step heading is "Verify Voucher" and status is "Certified"
+  7. Locate the **"Batch Number"** field (required, marked with *)
+  8. Fill Batch Number with a value (e.g. `BATCH-E2E-001`)
+  9. Check the confirmation checkbox: "I confirm that I have reviewed the payment and supporting information"
+  10. Snapshot to confirm Submit is now enabled
+  11. Click Submit
+  12. Confirm any dialog if prompted
+  13. Verify **"Authorise Invoice Voucher"** step loads **inline** (no redirect)
+  14. Verify status updates to **"Verified"**
+- **Expected result:** Voucher is verified by Thulilem (Finance Unit) and the workflow advances inline to Authorise Invoice Voucher
 - **Assertions:**
-  - [ ] Login as Gwenb successful
-  - [ ] Record is visible in Gwenb's Inbox
-  - [ ] Workflow step "Verify Voucher" is shown
+  - [ ] Login as Thulilem successful
+  - [ ] Record is visible in Thulilem's Inbox with Action Required "Verify Voucher"
+  - [ ] Step heading "Verify Voucher" shown, status "Certified"
+  - [ ] Batch Number field present and fillable
+  - [ ] Confirmation checkbox present
+  - [ ] Submit disabled until both Batch Number filled and checkbox checked
   - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] "Authorise Invoice Voucher" loads inline after submit
+  - [ ] Status updates to "Verified"
 
 ---
 
-## TC-07: Approve Invoice
+## TC-07: Authorise Invoice Voucher
+> **[UPDATED 2026-04-02]** Step renamed from "Approve Invoice" to "Authorise Invoice Voucher". Step loads inline after TC-06. Requires only a confirmation checkbox — no other input fields. Post-submit loads TC-08 inline.
+
 - **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit)
+- **Login:** Thulilem (Finance Unit) — step loads inline after TC-06 submit
 - **Prereq:** TC-06 must pass
 - **Steps:**
-  1. Log in as `Thulilem` (if not already logged in)
-  2. Navigate to Inbox or My Items
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Approve Invoice"
-  5. Complete any required fields on the workflow action page
-  6. Snapshot to confirm Submit is enabled
-  7. Click Submit
-  8. Confirm any dialog if prompted
-  9. Verify the step completes and the workflow advances
-- **Expected result:** Invoice is approved and the workflow advances to the next step
+  1. After TC-06 submit, "Authorise Invoice Voucher" loads **inline**
+  2. Snapshot to confirm step heading is "Authorise Invoice Voucher" and status is "Verified"
+  3. Verify invoice details are displayed correctly (Total Amount R 2500)
+  4. Check the confirmation checkbox: "I confirm that I have reviewed and approve the invoice, payment details and all supporting information."
+  5. Snapshot to confirm Submit is now enabled
+  6. Click Submit
+  7. Confirm any dialog if prompted
+  8. Verify **"Upload Captured Invoices Report From BAS"** step loads **inline**
+  9. Verify status updates to **"Approved"**
+- **Expected result:** Invoice voucher is authorised by Thulilem and the workflow advances inline to the next step
 - **Assertions:**
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Approve Invoice" is shown
+  - [ ] Step heading "Authorise Invoice Voucher" shown, status "Verified"
+  - [ ] Confirmation checkbox present and required
+  - [ ] Submit disabled until checkbox checked
   - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] "Upload Captured Invoices Report From BAS" loads inline after submit
+  - [ ] Status updates to "Approved"
 
 ---
 
 ## TC-08: Upload Captured Invoices Report From BAS
+> **[BLOCKED 2026-04-02]** Step loads inline after TC-07 but has **no Submit button**. The workflow action page renders the general BAS request details view (`SAGov-BAS-request-for-payment-details v11`) with only an "Other Documents" upload section and a Close button. Uploading a file saves it to the record but does not advance the workflow. Clicking Close navigates back to the previous step. **This step is blocked pending a fix from the development team.**
+
 - **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit)
+- **Login:** Thulilem (Finance Unit) — step loads inline after TC-07 submit
 - **Prereq:** TC-07 must pass
-- **Steps:**
-  1. Log in as `Thulilem` (if not already logged in)
-  2. Navigate to Inbox or My Items
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Upload Captured Invoices Report From BAS"
-  5. On the workflow action page, locate the report upload field
-  6. Upload a local file as the captured invoices report
-  7. Snapshot to confirm the file is attached and Submit is enabled
-  8. Click Submit
-  9. Confirm any dialog if prompted
-  10. Verify the step completes and the workflow advances
+- **Status:** BLOCKED — no Submit button on workflow action page
+- **Steps (when unblocked):**
+  1. After TC-07 submit, "Upload Captured Invoices Report From BAS" should load inline
+  2. Snapshot to confirm step heading and status "Approved"
+  3. Locate the report upload section
+  4. Upload a local file as the Captured Invoices Report from BAS
+  5. Snapshot to confirm the file is attached and Submit is enabled
+  6. Click Submit
+  7. Confirm any dialog if prompted
+  8. Verify the step completes and the workflow advances
 - **Expected result:** Captured invoices report is uploaded and the workflow advances
 - **Assertions:**
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Upload Captured Invoices Report From BAS" is shown
+  - [ ] Step heading "Upload Captured Invoices Report From BAS" shown, status "Approved"
   - [ ] File upload field is present and accepts a local file
+  - [ ] **[FAILING 2026-04-02] Submit button is present** — currently absent; workflow cannot advance
   - [ ] Submit completes without errors
   - [ ] Workflow step advances after Submit
 
