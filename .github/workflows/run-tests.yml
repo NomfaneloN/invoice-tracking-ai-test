@@ -22,6 +22,9 @@ on:
         default: '2500'
         type: string
 
+permissions:
+  contents: write
+
 env:
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
