@@ -145,41 +145,75 @@ function parseReport(filename, content) {
     const startMs = timingMatch ? (toMs(date, timingMatch[1]) ?? Date.now()) : Date.now();
     const stopMs  = timingMatch ? (toMs(date, timingMatch[2]) ?? startMs + 1000) : startMs + 1000;
 
-    // ── build steps: numbered execution steps + assertion checks ─────────
+    // ── build steps: two groups — Execution Steps + Assertions ──────────
 
-    const rawSteps = [];
-
-    // Numbered execution steps (all treated as passed)
-    for (const line of (section.match(/^\d+\..+/gm) || [])) {
-      rawSteps.push({
-        name: line.replace(/^\d+\.\s*/, '').trim(),
-        status: 'passed',
-      });
-    }
+    // Numbered execution steps
+    const execLines = (section.match(/^\d+\..+/gm) || []).map(l => ({
+      name: l.replace(/^\d+\.\s*/, '').trim(),
+      status: 'passed',
+    }));
 
     // Assertion checks [x]/[!]/[ ]
     const assertionRaw = section.match(/- \[.?\] .+/g) || [];
-    for (const line of assertionRaw) {
-      const isPass = /- \[x\]/i.test(line);
-      const isFail = /- \[!\]/.test(line);
-      rawSteps.push({
-        name: line.replace(/^- \[[x! ]\]\s*/i, '').trim(),
+    const assertLines = assertionRaw.map(l => {
+      const isPass = /- \[x\]/i.test(l);
+      const isFail = /- \[!\]/.test(l);
+      return {
+        name: l.replace(/^- \[[x! ]\]\s*/i, '').trim(),
         status: isPass ? 'passed' : isFail ? 'failed' : 'skipped',
+      };
+    });
+
+    // Build grouped steps with distributed timing
+    const steps = [];
+    const totalChildren = execLines.length + assertLines.length;
+    const times = distributeTime(startMs, stopMs, totalChildren);
+    let timeIdx = 0;
+
+    function makeStep(s) {
+      const t = times[timeIdx++] || { start: startMs, stop: stopMs };
+      return {
+        name: s.name,
+        status: s.status,
+        stage: 'finished',
+        start: t.start,
+        stop: t.stop,
+        steps: [],
+        attachments: [],
+        parameters: [],
+      };
+    }
+
+    if (execLines.length > 0) {
+      const execStatus = execLines.some(s => s.status === 'failed') ? 'failed' : 'passed';
+      const execChildren = execLines.map(makeStep);
+      steps.push({
+        name: 'Execution Steps',
+        status: execStatus,
+        stage: 'finished',
+        start: execChildren[0].start,
+        stop:  execChildren[execChildren.length - 1].stop,
+        steps: execChildren,
+        attachments: [],
+        parameters: [],
       });
     }
 
-    // Distribute TC time evenly across steps so Allure shows duration per step
-    const times = distributeTime(startMs, stopMs, rawSteps.length);
-    const steps = rawSteps.map((s, i) => ({
-      name: s.name,
-      status: s.status,
-      stage: 'finished',
-      start: times[i].start,
-      stop:  times[i].stop,
-      steps: [],
-      attachments: [],
-      parameters: [],
-    }));
+    if (assertLines.length > 0) {
+      const assertStatus = assertLines.some(s => s.status === 'failed') ? 'failed'
+        : assertLines.every(s => s.status === 'skipped') ? 'skipped' : 'passed';
+      const assertChildren = assertLines.map(makeStep);
+      steps.push({
+        name: 'Assertions',
+        status: assertStatus,
+        stage: 'finished',
+        start: assertChildren[0].start,
+        stop:  assertChildren[assertChildren.length - 1].stop,
+        steps: assertChildren,
+        attachments: [],
+        parameters: [],
+      });
+    }
 
     // ── build description from assertions ─────────────────────────────────
 
