@@ -1,12 +1,6 @@
 name: Allure Report
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'test-reports/**'
-      - 'scripts/generate-allure-results.js'
-      - 'package.json'
   workflow_dispatch:
 
 permissions:
