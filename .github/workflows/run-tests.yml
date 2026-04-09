@@ -42,11 +42,14 @@ jobs:
 
       - name: Run test plan
         run: |
+          REPORT_NAME="${{ inputs.test_plan }}-$(date +%Y-%m-%dT%H-%M).md"
+          echo "REPORT_NAME=$REPORT_NAME" >> $GITHUB_ENV
+
           echo "Running test plan: test-plans/${{ inputs.test_plan }}.md"
           echo "Invoice No: ${{ inputs.invoice_no }}"
           echo "Invoice Amount: ${{ inputs.invoice_amount }}"
 
-          claude -p "Read CLAUDE.md, then test-plans/RULES.md, then execute test-plans/${{ inputs.test_plan }}.md from start to finish. Use Invoice No ${{ inputs.invoice_no }} and Invoice Amount ${{ inputs.invoice_amount }}. Never stop executing. Save the report to test-reports/ when done." \
+          claude -p "Read CLAUDE.md, then test-plans/RULES.md, then execute test-plans/${{ inputs.test_plan }}.md from start to finish. Use Invoice No ${{ inputs.invoice_no }} and Invoice Amount ${{ inputs.invoice_amount }}. Never stop executing. Save the report to test-reports/$REPORT_NAME when done." \
             --allowedTools 'mcp__playwright__*,Read,Write,Edit,Bash,Glob,Grep' \
             --max-turns 200
         env:
@@ -56,25 +59,27 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet test-reports/; then
-            echo "No new test reports generated."
-          else
-            git add test-reports/
+          git add "test-reports/$REPORT_NAME" 2>/dev/null || true
+          if ! git diff --cached --quiet; then
             git commit -m "Add test report for ${{ inputs.test_plan }} run $(date +%Y-%m-%dT%H-%M)"
             git push
+          else
+            echo "No new test report generated."
           fi
 
-      - name: Upload test reports
+      - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports-${{ github.run_id }}
-          path: test-reports/
+          name: test-report-${{ github.run_id }}
+          path: test-reports/${{ env.REPORT_NAME }}
           retention-days: 30
 
       - name: Post summary
         if: always()
         run: |
+          REPO_URL="https://github.com/${{ github.repository }}"
+
           echo "## Test Run Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
@@ -82,14 +87,12 @@ jobs:
           echo "| Test Plan | \`${{ inputs.test_plan }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Invoice No | ${{ inputs.invoice_no }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Amount | ${{ inputs.invoice_amount }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Run ID | ${{ github.run_id }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Report | [test-reports/$REPORT_NAME]($REPO_URL/blob/main/test-reports/$REPORT_NAME) |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Show latest report if exists
-          latest=$(ls -t test-reports/*.md 2>/dev/null | head -1)
-          if [ -n "$latest" ]; then
-            echo "### Latest Report" >> $GITHUB_STEP_SUMMARY
+          # Show report content if it exists
+          if [ -f "test-reports/$REPORT_NAME" ]; then
+            echo "### Report Preview" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            # Extract summary table if present
-            sed -n '/^| TC /,/^$/p' "$latest" >> $GITHUB_STEP_SUMMARY
+            sed -n '/^| TC /,/^$/p' "test-reports/$REPORT_NAME" >> $GITHUB_STEP_SUMMARY
           fi

@@ -26,9 +26,12 @@ jobs:
 
       - name: Run smoke test (TC-01 only)
         run: |
+          REPORT_NAME="smoke-$(date +%Y-%m-%dT%H-%M).md"
+          echo "REPORT_NAME=$REPORT_NAME" >> $GITHUB_ENV
+
           INVOICE_NO="SMOKE-$(date +%Y%m%d)"
 
-          claude -p "Read CLAUDE.md, then test-plans/RULES.md. Execute ONLY TC-01 from test-plans/e2e-bas-full-workflow.md as a smoke test. Use Invoice No $INVOICE_NO and Invoice Amount 100. Login as Thulilem, create a new BAS Request, fill the form, and submit. Verify the next step loads. Save a brief report to test-reports/smoke-$(date +%Y-%m-%dT%H-%M).md. Do not continue past TC-01." \
+          claude -p "Read CLAUDE.md, then test-plans/RULES.md. Execute ONLY TC-01 from test-plans/e2e-bas-full-workflow.md as a smoke test. Use Invoice No $INVOICE_NO and Invoice Amount 100. Login as Thulilem, create a new BAS Request, fill the form, and submit. Verify the next step loads. Save a brief report to test-reports/$REPORT_NAME. Do not continue past TC-01." \
             --allowedTools 'mcp__playwright__*,Read,Write,Edit,Bash,Glob,Grep' \
             --max-turns 50
         env:
@@ -38,9 +41,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add test-reports/ 2>/dev/null || true
+          git add "test-reports/$REPORT_NAME" 2>/dev/null || true
           if ! git diff --cached --quiet; then
-            git commit -m "Add smoke test report $(date +%Y-%m-%dT%H-%M)"
+            git commit -m "Add smoke test report $REPORT_NAME"
             git push
           fi
 
@@ -49,8 +52,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: smoke-test-${{ github.run_id }}
-          path: test-reports/
+          path: test-reports/${{ env.REPORT_NAME }}
           retention-days: 14
+
+      - name: Post report link
+        if: always()
+        run: |
+          REPO_URL="https://github.com/${{ github.repository }}"
+          echo "## Smoke Test Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📄 [test-reports/$REPORT_NAME]($REPO_URL/blob/main/test-reports/$REPORT_NAME)" >> $GITHUB_STEP_SUMMARY
 
       - name: Notify on failure
         if: failure()
