@@ -57,8 +57,8 @@ function toAllureStatus(raw) {
   const r = raw.toUpperCase();
   if (r.includes('PASS')) return 'passed';
   if (r.includes('FAIL')) return 'failed';
-  if (r.includes('BLOCK')) return 'broken';
   if (r.includes('SKIP') || r.includes('NOT RUN') || r.includes('OBSOLETE')) return 'skipped';
+  if (r.includes('BLOCK')) return 'broken';
   return 'unknown';
 }
 
@@ -96,21 +96,24 @@ function parseReport(filename, content) {
       if (statusLine) status = toAllureStatus(statusLine[1]);
     }
 
-    // 3. Old summary table format: | TC-01 | ... | **PASS** |
+    // 3. Summary table — find the row for this TC, grab the last **bold** value (any column count)
     if (status === 'unknown') {
-      const tableMatch = content.match(
-        new RegExp(`\\|\\s*${tcId}\\s*\\|[^|]*\\|[^|]*\\|\\s*\\*\\*(\\w[^*]*)\\*\\*`)
-      );
-      if (tableMatch) status = toAllureStatus(tableMatch[1]);
+      for (const row of content.split('\n')) {
+        if (new RegExp(`\\|\\s*${tcId}\\s*\\|`).test(row)) {
+          const bolds = row.match(/\*\*(\w[^*\n]*)\*\*/g);
+          if (bolds) {
+            const last = bolds[bolds.length - 1].replace(/\*\*/g, '').trim();
+            const s = toAllureStatus(last);
+            if (s !== 'unknown') { status = s; break; }
+          }
+        }
+      }
     }
 
-    // 4. Assertion-style [x]/[!] — if majority pass and none fail, assume passed
+    // 4. Assertion fallback — only use [x] count; [!] means "observed" not "failed"
     if (status === 'unknown') {
       const passes = (section.match(/- \[x\]/gi) || []).length;
-      const fails = (section.match(/- \[!\]/gi) || []).length;
-      if (passes > 0 || fails > 0) {
-        status = fails > 0 ? 'failed' : 'passed';
-      }
+      if (passes > 0) status = 'passed';
     }
 
     if (status === 'unknown') status = 'skipped';
@@ -123,14 +126,16 @@ function parseReport(filename, content) {
     const startMs = timingMatch ? (toMs(date, timingMatch[1]) ?? Date.now()) : Date.now();
     const stopMs  = timingMatch ? (toMs(date, timingMatch[2]) ?? startMs + 1000) : startMs + 1000;
 
-    // ── build steps from numbered list ───────────────────────────────────
+    // ── build steps from assertions [x]/[!]/[ ] ──────────────────────────
 
     const steps = [];
-    const stepLines = section.match(/^\d+\..+/gm) || [];
-    for (const line of stepLines) {
+    const assertionRaw = section.match(/- \[.?\] .+/g) || [];
+    for (const line of assertionRaw) {
+      const isPass = /- \[x\]/i.test(line);
+      const isFail = /- \[!\]/.test(line);
       steps.push({
-        name: line.replace(/^\d+\.\s*/, '').trim(),
-        status: 'passed',
+        name: line.replace(/^- \[[x! ]\]\s*/i, '').trim(),
+        status: isPass ? 'passed' : isFail ? 'failed' : 'skipped',
         stage: 'finished',
         steps: [],
         attachments: [],
@@ -138,10 +143,24 @@ function parseReport(filename, content) {
       });
     }
 
+    // Fallback: numbered list steps if no assertions found
+    if (steps.length === 0) {
+      for (const line of (section.match(/^\d+\..+/gm) || [])) {
+        steps.push({
+          name: line.replace(/^\d+\.\s*/, '').trim(),
+          status: 'passed',
+          stage: 'finished',
+          steps: [],
+          attachments: [],
+          parameters: [],
+        });
+      }
+    }
+
     // ── build description from assertions ─────────────────────────────────
 
-    const assertionLines = (section.match(/- \[.?\] .+/g) || [])
-      .map(l => l.replace(/- \[x\]/g, '✅').replace(/- \[!\]/g, '❌').replace(/- \[ \]/g, '⬜'));
+    const assertionLines = assertionRaw
+      .map(l => l.replace(/- \[x\]/gi, '✅').replace(/- \[!\]/g, '❌').replace(/- \[ \]/g, '⬜'));
     const description = assertionLines.length
       ? '**Assertions:**\n' + assertionLines.join('\n')
       : '';
@@ -155,6 +174,7 @@ function parseReport(filename, content) {
       { name: 'subSuite',    value: tcId },
       { name: 'tag',         value: 'e2e' },
       { name: 'tag',         value: suite.toLowerCase().replace(/\s+/g, '-') },
+      { name: 'tag',         value: runTypeTag() },
     ];
     if (loginMatch) {
       labels.push({ name: 'tag', value: `role:${loginMatch[1].trim().toLowerCase()}` });
@@ -162,7 +182,7 @@ function parseReport(filename, content) {
 
     results.push({
       uuid: uuid(),
-      historyId: historyId(suite, fullName),
+      historyId: historyId('global', tcId),   // deduplicate by TC-ID only across all suites
       name: fullName,
       fullName: `${suite} > ${fullName}`,
       status,
@@ -186,14 +206,21 @@ function parseReport(filename, content) {
 
 function writeEnvironment() {
   const envPath = path.join(RESULTS_DIR, 'environment.properties');
+  const runType = process.env.CI ? 'CI (GitHub Actions)' : 'Local';
   const content = [
     'App=ITS Shesha3',
     'Environment=QA',
     'URL=https://pd-invtracking-adminportal-qa.azurewebsites.net',
     'TestRunner=Claude (MCP browser tools)',
+    `RunType=${runType}`,
     `ReportGenerated=${new Date().toISOString()}`,
   ].join('\n');
   fs.writeFileSync(envPath, content, 'utf8');
+}
+
+/** Returns 'local' or 'ci' — used as a tag on every result */
+function runTypeTag() {
+  return process.env.CI ? 'ci' : 'local';
 }
 
 // ── write categories.json ─────────────────────────────────────────────────────
@@ -232,26 +259,48 @@ function main() {
     }
   }
 
-  const reportFiles = fs.readdirSync(REPORTS_DIR).filter(f => f.endsWith('.md'));
-  let total = 0;
+  // Sort files newest-first by the date embedded in the filename (YYYY-MM-DDThh-mm)
+  function fileDate(filename) {
+    const m = filename.match(/(\d{4}-\d{2}-\d{2}T\d{2}-\d{2})/);
+    if (m) return m[1];
+    const d = filename.match(/(\d{4}-\d{2}-\d{2})/);
+    return d ? d[1] + 'T00-00' : '0000-00-00T00-00';
+  }
+  const reportFiles = fs.readdirSync(REPORTS_DIR)
+    .filter(f => f.endsWith('.md'))
+    .sort((a, b) => fileDate(b).localeCompare(fileDate(a)));
+
+  // Collect all results; first real (non-skipped) result per TC-ID wins
+  const byHistoryId = new Map();
 
   for (const filename of reportFiles) {
     const content = fs.readFileSync(path.join(REPORTS_DIR, filename), 'utf8');
     const results = parseReport(filename, content);
+    let kept = 0;
 
     for (const result of results) {
-      const outPath = path.join(RESULTS_DIR, `${result.uuid}-result.json`);
-      fs.writeFileSync(outPath, JSON.stringify(result, null, 2), 'utf8');
+      // Always drop skipped/unknown
+      if (result.status === 'skipped' || result.status === 'unknown') continue;
+      // Only keep if we don't already have a result for this TC from a newer file
+      if (!byHistoryId.has(result.historyId)) {
+        byHistoryId.set(result.historyId, result);
+        kept++;
+      }
     }
 
-    console.log(`  ${filename} → ${results.length} test(s)`);
-    total += results.length;
+    console.log(`  ${filename} → ${results.length} parsed, ${kept} kept`);
+  }
+
+  // Write deduplicated results
+  for (const result of byHistoryId.values()) {
+    const outPath = path.join(RESULTS_DIR, `${result.uuid}-result.json`);
+    fs.writeFileSync(outPath, JSON.stringify(result, null, 2), 'utf8');
   }
 
   writeEnvironment();
   writeCategories();
 
-  console.log(`\nDone. ${total} Allure result(s) written to allure-results/`);
+  console.log(`\nDone. ${byHistoryId.size} Allure result(s) written to allure-results/`);
 }
 
 main();

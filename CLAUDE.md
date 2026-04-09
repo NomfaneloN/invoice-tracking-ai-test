@@ -49,3 +49,22 @@ Every test report MUST include:
 - **UI/UX Issues section**: every visual, layout, labelling, or usability problem observed — even on passing TCs. Rate severity (Critical/High/Medium/Low)
 - **Performance Observations**: any page loads >3s, slow transitions, spinner delays
 - See `test-plans/RULES.md` for full report format specification
+
+## Allure Report
+
+Generate locally: `npm run allure:report` (installs dependencies, builds HTML, opens browser)  
+Trigger on CI: GitHub Actions → **Allure Report** → Run workflow (manual only)  
+Published at: https://nomfanelon.github.io/invoice-tracking-ai-test/
+
+### How `scripts/generate-allure-results.js` works
+- Parses every `test-reports/*.md` → writes `allure-results/*.json`
+- **One result per TC-ID across all reports** — deduplicates so each TC appears once
+- **Latest run wins**: files are sorted by the date embedded in the filename (`YYYY-MM-DDThh-mm`), newest first. The first non-skipped result for each TC-ID is kept.
+- Skipped and unknown TCs are excluded entirely
+- `[!]` assertions = observations/notes on a passing test; they appear as step annotations but do NOT fail the TC
+- `RunType` tag (`local` / `ci`) is added to every result and shown in the Environment widget
+
+### Rules when modifying `generate-allure-results.js`
+- **Always sort by embedded date, not alphabetically.** Alphabetical order is wrong: `bas-full-workflow-2026-04-02` sorts after `bas-2026-04-09` (because `f` > `2`), causing an older result to overwrite a newer one.
+- TC-level status comes from `**Result:**`, then `**Status:**`, then the last `**BOLD**` value in the TC's summary table row (supports any number of columns), then `[x]` assertion count as fallback. Never infer failure from `[!]` count alone.
+- `**Status: SKIP — BLOCKER**` → skipped (SKIP is checked before BLOCK).
