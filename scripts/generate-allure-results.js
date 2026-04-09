@@ -65,7 +65,9 @@ function toAllureStatus(raw) {
 /** Extract API cost from Run Metrics table, e.g. "~$0.30–$0.50" or "< $0.01" */
 function extractCost(content) {
   const m = content.match(/API Cost[^|]*\|\s*([^\n|]+)/i);
-  return m ? m[1].trim() : null;
+  if (!m) return null;
+  // Strip parenthetical notes, keep just the amount
+  return m[1].replace(/\(.*?\)/g, '').trim();
 }
 
 /** Distribute TC time evenly across N steps, returning [{start, stop}] */
