@@ -18,7 +18,7 @@ RP107BS                                                    PAYMENT STUB         
   SOURCE DOC                        PURCHASE ORDER                    PAYMENT    FUNCTIONAL
   NUMBER                            NUMBER                            NUMBER     AREA        USER          AMOUNT
  ---------------------------------------------------------------------------------------------------------------------------------
-  ITS-E2E-002                       NOT APPLIC                        4561       CL          27856303                    2,500.00
+  ITS-E2E-001                       NOT APPLIC                        4561       CL          27856303                    2,500.00
                                                                                                           ------------------------
                                                                                              TOTAL                       2,500.00
                                                                                                           ------------------------

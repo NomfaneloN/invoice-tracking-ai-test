@@ -1,0 +1,76 @@
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_plan:
+        description: "Test plan to execute"
+        type: choice
+        options:
+          - e2e-bas-request
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npx playwright install chromium --with-deps
+
+      - name: Set report name
+        id: report
+        run: |
+          PREFIX=${{ github.event_name == 'schedule' && 'scheduled' || 'manual' }}
+          NAME="${{ inputs.test_plan || 'e2e-bas-request' }}-${PREFIX}-$(date +%Y-%m-%dT%H-%M)"
+          echo "name=${NAME}" >> $GITHUB_OUTPUT
+
+      - name: Run tests
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            E2E test. Run ID: ${{ github.run_id }}. BE EFFICIENT.
+            1. Read test-plans/RULES.md then test-plans/${{ inputs.test_plan || 'e2e-bas-request' }}.md
+            2. Execute ALL test cases sequentially.
+            3. Save report to test-reports/${{ steps.report.outputs.name }}.md
+            4. Each TC: URL + pass/fail. No screenshots.
+            5. Print RESULT: PASS or RESULT: FAIL
+            Environment: https://pd-invtracking-adminportal-qa.azurewebsites.net/login
+            Credentials: Admin / ${{ secrets.APP_PASSWORD }}
+          claude_args: "--max-turns 800 --model sonnet --dangerously-skip-permissions --mcp-config .github/mcp-config.json"
+        env:
+          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+
+      - name: Post report to summary
+        if: always()
+        run: |
+          REPORT="test-reports/${{ steps.report.outputs.name }}.md"
+          if [ -f "$REPORT" ]; then
+            echo "## ${{ steps.report.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+            cat "$REPORT" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report
+          path: test-reports/
+
+      - name: Commit report
+        if: success()
+        run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git pull --rebase origin main || true
+          git add test-reports/*.md 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "CI: ${{ steps.report.outputs.name }}"
+          git push || true
