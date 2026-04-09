@@ -62,11 +62,28 @@ function toAllureStatus(raw) {
   return 'unknown';
 }
 
+/** Extract API cost from Run Metrics table, e.g. "~$0.30–$0.50" or "< $0.01" */
+function extractCost(content) {
+  const m = content.match(/API Cost[^|]*\|\s*([^\n|]+)/i);
+  return m ? m[1].trim() : null;
+}
+
+/** Distribute TC time evenly across N steps, returning [{start, stop}] */
+function distributeTime(startMs, stopMs, count) {
+  if (count === 0) return [];
+  const slice = Math.max(1, Math.floor((stopMs - startMs) / count));
+  return Array.from({ length: count }, (_, i) => ({
+    start: startMs + i * slice,
+    stop:  startMs + (i + 1) * slice,
+  }));
+}
+
 // ── per-file parser ───────────────────────────────────────────────────────────
 
 function parseReport(filename, content) {
   const suite = suiteFromFilename(filename);
   const date = extractDate(content, filename);
+  const reportCost = extractCost(content);
   const results = [];
 
   // Split into TC sections — each starts with ## TC-
@@ -126,36 +143,41 @@ function parseReport(filename, content) {
     const startMs = timingMatch ? (toMs(date, timingMatch[1]) ?? Date.now()) : Date.now();
     const stopMs  = timingMatch ? (toMs(date, timingMatch[2]) ?? startMs + 1000) : startMs + 1000;
 
-    // ── build steps from assertions [x]/[!]/[ ] ──────────────────────────
+    // ── build steps: numbered execution steps + assertion checks ─────────
 
-    const steps = [];
+    const rawSteps = [];
+
+    // Numbered execution steps (all treated as passed)
+    for (const line of (section.match(/^\d+\..+/gm) || [])) {
+      rawSteps.push({
+        name: line.replace(/^\d+\.\s*/, '').trim(),
+        status: 'passed',
+      });
+    }
+
+    // Assertion checks [x]/[!]/[ ]
     const assertionRaw = section.match(/- \[.?\] .+/g) || [];
     for (const line of assertionRaw) {
       const isPass = /- \[x\]/i.test(line);
       const isFail = /- \[!\]/.test(line);
-      steps.push({
+      rawSteps.push({
         name: line.replace(/^- \[[x! ]\]\s*/i, '').trim(),
         status: isPass ? 'passed' : isFail ? 'failed' : 'skipped',
-        stage: 'finished',
-        steps: [],
-        attachments: [],
-        parameters: [],
       });
     }
 
-    // Fallback: numbered list steps if no assertions found
-    if (steps.length === 0) {
-      for (const line of (section.match(/^\d+\..+/gm) || [])) {
-        steps.push({
-          name: line.replace(/^\d+\.\s*/, '').trim(),
-          status: 'passed',
-          stage: 'finished',
-          steps: [],
-          attachments: [],
-          parameters: [],
-        });
-      }
-    }
+    // Distribute TC time evenly across steps so Allure shows duration per step
+    const times = distributeTime(startMs, stopMs, rawSteps.length);
+    const steps = rawSteps.map((s, i) => ({
+      name: s.name,
+      status: s.status,
+      stage: 'finished',
+      start: times[i].start,
+      stop:  times[i].stop,
+      steps: [],
+      attachments: [],
+      parameters: [],
+    }));
 
     // ── build description from assertions ─────────────────────────────────
 
@@ -180,6 +202,20 @@ function parseReport(filename, content) {
       labels.push({ name: 'tag', value: `role:${loginMatch[1].trim().toLowerCase()}` });
     }
 
+    // ── parameters: duration + cost ──────────────────────────────────────
+
+    const durationSec = Math.round((stopMs - startMs) / 1000);
+    const durationLabel = durationSec >= 60
+      ? `${Math.floor(durationSec / 60)}m ${durationSec % 60}s`
+      : `${durationSec}s`;
+
+    const parameters = [
+      { name: 'Duration', value: durationLabel },
+    ];
+    if (reportCost) {
+      parameters.push({ name: 'API Cost (est.)', value: reportCost });
+    }
+
     results.push({
       uuid: uuid(),
       historyId: historyId('global', tcId),   // deduplicate by TC-ID only across all suites
@@ -193,7 +229,7 @@ function parseReport(filename, content) {
       stop: stopMs,
       labels,
       links: [],
-      parameters: [],
+      parameters,
       steps,
       attachments: [],
     });
