@@ -1,0 +1,228 @@
+{
+  "uuid": "fe3a4d93-0d87-4fb1-a83f-077c42bf7a22",
+  "historyId": "3ab329ece090fd41a0cfe38929ddcedf",
+  "name": "TC-10: Capture Filing",
+  "fullName": "BAS E2E > TC-10: Capture Filing",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Record visible in Gwenb's Inbox with Action Required \"Capture Filing\"\n✅ Step heading \"Capture Filing\" shown, status \"Paid\"\n✅ Filing Details section present: Batch Number, Box Number, File Range (all required)\n✅ Confirmation checkbox present and checked\n✅ Submit disabled until all fields filled and checkbox checked\n✅ Submit completes without errors\n✅ Record no longer in Gwenb's queue after submit — workflow complete",
+  "descriptionHtml": "",
+  "start": 1775717520000,
+  "stop": 1775717580000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-10"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:gwenb"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "1m 0s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717520000,
+      "stop": 1775717552000,
+      "steps": [
+        {
+          "name": "Logged in as Gwenb — header shows \"Gwen Simbeni\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717520000,
+          "stop": 1775717524000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Navigated to Inbox — PAY4820/2026 visible, Action Required: \"Capture Filing\", Status: \"Paid\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717524000,
+          "stop": 1775717528000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Opened workflow action",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717528000,
+          "stop": 1775717532000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed step heading \"Capture Filing: Invoice(s) - ITS-E2E-001 | Supplier Name - Maake\", status \"Paid\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717532000,
+          "stop": 1775717536000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Filled Filing Details:",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717536000,
+          "stop": 1775717540000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Checked confirmation checkbox: \"I confirm that I have captured all the filing details under which the invoice is stored.\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717540000,
+          "stop": 1775717544000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit enabled — clicked Submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717544000,
+          "stop": 1775717548000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "App redirected to My Items — PAY4820/2026 not present (workflow complete)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717548000,
+          "stop": 1775717552000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717552000,
+      "stop": 1775717580000,
+      "steps": [
+        {
+          "name": "Record visible in Gwenb's Inbox with Action Required \"Capture Filing\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717552000,
+          "stop": 1775717556000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Step heading \"Capture Filing\" shown, status \"Paid\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717556000,
+          "stop": 1775717560000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Filing Details section present: Batch Number, Box Number, File Range (all required)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717560000,
+          "stop": 1775717564000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmation checkbox present and checked",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717564000,
+          "stop": 1775717568000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit disabled until all fields filled and checkbox checked",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717568000,
+          "stop": 1775717572000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717572000,
+          "stop": 1775717576000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Record no longer in Gwenb's queue after submit — workflow complete",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717576000,
+          "stop": 1775717580000,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

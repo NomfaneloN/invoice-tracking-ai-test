@@ -1,0 +1,82 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"**Assertions:**
+✅ Excel file updated with correct system data
+✅ Admin login successful
+✅ BAS Report Import menu item found and page loads
+✅ File upload field present, file uploaded successfully
+✅ Import completes without errors
+✅ History tab shows Payments Authorised = 1
+✅ Workflow advances — record shows ""Attach Payment Stub"" / ""Authorized"" in Thulilem's Inbox","80000","TC-08: Upload Captured Invoices Report From BAS (Admin BAS Report Import)","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-08","BAS E2E","",""
+"**Assertions:**
+✅ Step heading ""Authorise Invoice Voucher"" shown, status ""Verified""
+✅ Confirmation checkbox present and required
+✅ Submit disabled until checkbox checked
+✅ Submit completes without errors
+✅ ""Upload Captured Invoices Report From BAS"" loads inline after submit
+✅ Status updates to ""Approved""","60000","TC-07: Authorise Invoice Voucher","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-07","BAS E2E","",""
+"**Assertions:**
+✅ Payment stub file updated with correct SOURCE DOC NUMBER (ITS-E2E-001)
+✅ Admin login successful
+✅ Payment Stub Import page loads
+✅ File uploaded successfully
+✅ Import completes without errors
+✅ History tab shows Payments Confirmed = 1
+✅ Workflow advances to ""Capture Filing""
+✅ Record visible in Gwenb's Inbox with Action Required ""Capture Filing"" and status ""Paid""","105000","TC-09: Attach Payment Stub (Admin Payment Stubs Import)","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-09","BAS E2E","",""
+"**Assertions:**
+✅ Step heading shows ""Assign Branch Finance Admin To Assign Certifier""
+✅ ""Branch Finance Admin"" field is present and Tania Smith selected
+✅ Submit becomes enabled after selection
+✅ Submit completes without errors
+✅ App redirects to My Items after Submit
+✅ Record visible in My Items with status ""Received""","40000","TC-02: Assign Branch Finance Admin To Assign Certifier","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-02","BAS E2E","",""
+"**Assertions:**
+✅ Login as TaniaSmith successful
+✅ Record visible in Inbox with Action Required ""Assign Responsible Person to Certify Invoice""
+✅ TC-03a: Step heading shown, ""Official"" field present, Tania Smith selectable
+✅ TC-03a: Submit enabled and completes without errors
+✅ TC-03a: ""Certify Invoice"" loads inline after submit
+✅ TC-03b: Radio buttons for Business Unit Responses visible
+✅ TC-03b: Submit enabled after radio selection
+✅ TC-03b: Submit completes without errors
+✅ TC-03b: Status updates to ""Certified""
+✅ TC-03b: ""Prepare Voucher"" loads inline after submit","135000","TC-03: Assign Responsible Person + Certify Invoice","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-03","BAS E2E","",""
+"**Assertions:**
+✅ Record visible in Gwenb's Inbox with Action Required ""Capture Filing""
+✅ Step heading ""Capture Filing"" shown, status ""Paid""
+✅ Filing Details section present: Batch Number, Box Number, File Range (all required)
+✅ Confirmation checkbox present and checked
+✅ Submit disabled until all fields filled and checkbox checked
+✅ Submit completes without errors
+✅ Record no longer in Gwenb's queue after submit — workflow complete","60000","TC-10: Capture Filing","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-10","BAS E2E","",""
+"**Assertions:**
+✅ Step heading ""Prepare Voucher"" shown with status ""Certified""
+✅ ""Outcome"" radio buttons present with 4 options
+✅ ""Business Unit Response"" checklist present with 4 Yes/No questions
+✅ Submit enabled after Outcome selected and all checklist items answered
+✅ Submit completes without errors
+✅ App redirects to My Items after Submit
+✅ Record no longer in TaniaSmith's queue","45000","TC-05: Prepare Voucher","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-05","BAS E2E","",""
+"**Assertions:**
+✅ Login successful — dashboard visible
+✅ Mode is set to Latest (localStorage confirmed)
+✅ My Items page loads
+✅ New BAS Request form opens with Draft status and Ref No PAY4820/2026 assigned
+✅ Date Received auto-populated with 09/04/2026
+✅ Supplier Name selected and Supplier Details panel populated
+✅ Description filled
+✅ Invoice row added with Invoice No ITS-E2E-001, Invoice Amount 2500
+✅ Invoice Attachment uploaded successfully
+✅ Total Amount reflects R 2500
+✅ Form submits without errors
+✅ Next workflow step loads inline — status shown as ""Received""","150000","TC-01: Register and Upload Invoice","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-01","BAS E2E","",""
+"**Assertions:**
+✅ Login as Thulilem successful
+✅ Record visible in Thulilem's Inbox with Action Required ""Verify Voucher""
+✅ Step heading ""Verify Voucher"" shown, status ""Certified""
+✅ Batch Number field present and filled with BATCH-E2E-001
+✅ Confirmation checkbox present and checked
+✅ Submit disabled until both filled — enabled after both set
+✅ Submit completes without errors
+✅ ""Authorise Invoice Voucher"" loads inline after submit
+✅ Status updates to ""Verified""","200000","TC-06: Verify Voucher","Invoice Tracking QA","2026-04-09","passed","2026-04-09","TC-06","BAS E2E","",""

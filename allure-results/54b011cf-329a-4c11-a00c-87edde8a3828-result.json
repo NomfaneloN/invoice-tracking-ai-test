@@ -1,0 +1,208 @@
+{
+  "uuid": "54b011cf-329a-4c11-a00c-87edde8a3828",
+  "historyId": "12052f3c47d0abeaca4c66d382e50943",
+  "name": "TC-05: Prepare Voucher",
+  "fullName": "BAS E2E > TC-05: Prepare Voucher",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Step heading \"Prepare Voucher\" shown with status \"Certified\"\n✅ \"Outcome\" radio buttons present with 4 options\n✅ \"Business Unit Response\" checklist present with 4 Yes/No questions\n✅ Submit enabled after Outcome selected and all checklist items answered\n✅ Submit completes without errors\n✅ App redirects to My Items after Submit\n✅ Record no longer in TaniaSmith's queue",
+  "descriptionHtml": "",
+  "start": 1775716765000,
+  "stop": 1775716810000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-05"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:taniasmith (inline after tc-03b)"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "45s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716765000,
+      "stop": 1775716785766,
+      "steps": [
+        {
+          "name": "\"Prepare Voucher\" loaded inline after TC-03b submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716765000,
+          "stop": 1775716768461,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed step heading \"Prepare Voucher\", status \"Certified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716768461,
+          "stop": 1775716771922,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Under Outcome: selected \"Verification is complete\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716771922,
+          "stop": 1775716775383,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "All 4 Business Unit Response checklist items answered Yes",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716775383,
+          "stop": 1775716778844,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submitted — app redirected to My Items",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716778844,
+          "stop": 1775716782305,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "PAY4820/2026 no longer in TaniaSmith's queue",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716782305,
+          "stop": 1775716785766,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716785766,
+      "stop": 1775716809993,
+      "steps": [
+        {
+          "name": "Step heading \"Prepare Voucher\" shown with status \"Certified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716785766,
+          "stop": 1775716789227,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "\"Outcome\" radio buttons present with 4 options",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716789227,
+          "stop": 1775716792688,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "\"Business Unit Response\" checklist present with 4 Yes/No questions",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716792688,
+          "stop": 1775716796149,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit enabled after Outcome selected and all checklist items answered",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716796149,
+          "stop": 1775716799610,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716799610,
+          "stop": 1775716803071,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "App redirects to My Items after Submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716803071,
+          "stop": 1775716806532,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Record no longer in TaniaSmith's queue",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716806532,
+          "stop": 1775716809993,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

@@ -1,0 +1,188 @@
+{
+  "uuid": "4af64435-ba3e-4a48-af39-770dfc53da8f",
+  "historyId": "bb3bdc11fd6925b801fd0ce5882f81b2",
+  "name": "TC-08: Upload Captured Invoices Report From BAS (Admin BAS Report Import)",
+  "fullName": "BAS E2E > TC-08: Upload Captured Invoices Report From BAS (Admin BAS Report Import)",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Excel file updated with correct system data\n✅ Admin login successful\n✅ BAS Report Import menu item found and page loads\n✅ File upload field present, file uploaded successfully\n✅ Import completes without errors\n✅ History tab shows Payments Authorised = 1\n✅ Workflow advances — record shows \"Attach Payment Stub\" / \"Authorized\" in Thulilem's Inbox",
+  "descriptionHtml": "",
+  "start": 1775717280000,
+  "stop": 1775717360000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-08"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:admin"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "1m 20s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717280000,
+      "stop": 1775717309088,
+      "steps": [
+        {
+          "name": "Logged in as admin — admin dashboard loaded",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717280000,
+          "stop": 1775717287272,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Navigated to BAS Report → BAS Report Import",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717287272,
+          "stop": 1775717294544,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Uploaded prepared Excel file (18.44 kB)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717294544,
+          "stop": 1775717301816,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Clicked Import — form cleared after submission",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717301816,
+          "stop": 1775717309088,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717309088,
+      "stop": 1775717359992,
+      "steps": [
+        {
+          "name": "Excel file updated with correct system data",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717309088,
+          "stop": 1775717316360,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Admin login successful",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717316360,
+          "stop": 1775717323632,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "BAS Report Import menu item found and page loads",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717323632,
+          "stop": 1775717330904,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "File upload field present, file uploaded successfully",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717330904,
+          "stop": 1775717338176,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Import completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717338176,
+          "stop": 1775717345448,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "History tab shows Payments Authorised = 1",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717345448,
+          "stop": 1775717352720,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Workflow advances — record shows \"Attach Payment Stub\" / \"Authorized\" in Thulilem's Inbox",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717352720,
+          "stop": 1775717359992,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

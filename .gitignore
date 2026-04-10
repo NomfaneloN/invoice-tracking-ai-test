@@ -4,7 +4,4 @@
 !test-reports/screenshots/**/*.png
 !test-reports/screenshots/**/*.jpeg
 
-# Allure
-allure-results/
-allure-report/
 node_modules/

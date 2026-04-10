@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Blocked Tests",
+    "matchedStatuses": [
+      "broken"
+    ]
+  },
+  {
+    "name": "Skipped / Not Run",
+    "matchedStatuses": [
+      "skipped"
+    ]
+  },
+  {
+    "name": "Failed Tests",
+    "matchedStatuses": [
+      "failed"
+    ]
+  }
+]

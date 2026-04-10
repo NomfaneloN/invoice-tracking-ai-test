@@ -1,0 +1,338 @@
+{
+  "uuid": "5fef1f05-cc0d-4e61-a1da-fe428d94d3b6",
+  "historyId": "93c63275872f0fdf6bc1e56eb8d9c11d",
+  "name": "TC-01: Register and Upload Invoice",
+  "fullName": "BAS E2E > TC-01: Register and Upload Invoice",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Login successful — dashboard visible\n✅ Mode is set to Latest (localStorage confirmed)\n✅ My Items page loads\n✅ New BAS Request form opens with Draft status and Ref No PAY4820/2026 assigned\n✅ Date Received auto-populated with 09/04/2026\n✅ Supplier Name selected and Supplier Details panel populated\n✅ Description filled\n✅ Invoice row added with Invoice No ITS-E2E-001, Invoice Amount 2500\n✅ Invoice Attachment uploaded successfully\n✅ Total Amount reflects R 2500\n✅ Form submits without errors\n✅ Next workflow step loads inline — status shown as \"Received\"",
+  "descriptionHtml": "",
+  "start": 1775716440000,
+  "stop": 1775716590000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-01"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:thulilem"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "2m 30s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716440000,
+      "stop": 1775716520766,
+      "steps": [
+        {
+          "name": "Navigated to login page and logged in as Thulilem",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716440000,
+          "stop": 1775716445769,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Verified login — header shows \"Thulile Matekanya\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716445769,
+          "stop": 1775716451538,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed mode via localStorage: `CONFIGURATION_ITEM_MODE = \"latest\"` (UI badge shows \"Live\" — known display bug)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716451538,
+          "stop": 1775716457307,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Navigated to My Items → Create New → BAS Request For Payment",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716457307,
+          "stop": 1775716463076,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Form opened with status Draft, Ref No PAY4820/2026 assigned immediately",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716463076,
+          "stop": 1775716468845,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Date Received auto-populated with 09/04/2026",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716468845,
+          "stop": 1775716474614,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Supplier Name selected via entity picker: searched \"Maake\", double-clicked result",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716474614,
+          "stop": 1775716480383,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Supplier Details panel populated (Maake, Maaa123, 265 West Avenue, cedrick.maake@boxfusion.io, 0764633875)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716480383,
+          "stop": 1775716486152,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Description filled: \"E2E BAS test run\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716486152,
+          "stop": 1775716491921,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Invoice row: Date 09/04/2026, Service Delivery Date 09/04/2026, Invoice No ITS-E2E-001, Amount 2500",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716491921,
+          "stop": 1775716497690,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Attachment uploaded: e2e-bas-full-workflow.md (converted to e2e-bas-full-workflow.pdf by server post-submit)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716497690,
+          "stop": 1775716503459,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Invoice row confirmed — Total Amount R 2500",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716503459,
+          "stop": 1775716509228,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit clicked — next step loaded inline",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716509228,
+          "stop": 1775716514997,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Status shown: \"Received\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716514997,
+          "stop": 1775716520766,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716520766,
+      "stop": 1775716589994,
+      "steps": [
+        {
+          "name": "Login successful — dashboard visible",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716520766,
+          "stop": 1775716526535,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Mode is set to Latest (localStorage confirmed)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716526535,
+          "stop": 1775716532304,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "My Items page loads",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716532304,
+          "stop": 1775716538073,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "New BAS Request form opens with Draft status and Ref No PAY4820/2026 assigned",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716538073,
+          "stop": 1775716543842,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Date Received auto-populated with 09/04/2026",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716543842,
+          "stop": 1775716549611,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Supplier Name selected and Supplier Details panel populated",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716549611,
+          "stop": 1775716555380,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Description filled",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716555380,
+          "stop": 1775716561149,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Invoice row added with Invoice No ITS-E2E-001, Invoice Amount 2500",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716561149,
+          "stop": 1775716566918,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Invoice Attachment uploaded successfully",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716566918,
+          "stop": 1775716572687,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Total Amount reflects R 2500",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716572687,
+          "stop": 1775716578456,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Form submits without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716578456,
+          "stop": 1775716584225,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Next workflow step loads inline — status shown as \"Received\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716584225,
+          "stop": 1775716589994,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

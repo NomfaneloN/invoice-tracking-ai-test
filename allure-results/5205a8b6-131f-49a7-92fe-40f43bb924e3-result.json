@@ -1,0 +1,188 @@
+{
+  "uuid": "5205a8b6-131f-49a7-92fe-40f43bb924e3",
+  "historyId": "c739121c61ef9b9fe851b5f9792511f5",
+  "name": "TC-02: Assign Branch Finance Admin To Assign Certifier",
+  "fullName": "BAS E2E > TC-02: Assign Branch Finance Admin To Assign Certifier",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Step heading shows \"Assign Branch Finance Admin To Assign Certifier\"\n✅ \"Branch Finance Admin\" field is present and Tania Smith selected\n✅ Submit becomes enabled after selection\n✅ Submit completes without errors\n✅ App redirects to My Items after Submit\n✅ Record visible in My Items with status \"Received\"",
+  "descriptionHtml": "",
+  "start": 1775716590000,
+  "stop": 1775716630000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-02"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:thulilem (inline after tc-01)"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "40s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716590000,
+      "stop": 1775716608180,
+      "steps": [
+        {
+          "name": "After TC-01 submit, \"Assign Branch Finance Admin To Assign Certifier\" loaded inline",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716590000,
+          "stop": 1775716593636,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed step heading and status \"Received\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716593636,
+          "stop": 1775716597272,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Typed \"Tania\" in Branch Finance Admin combobox — selected \"Tania Smith\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716597272,
+          "stop": 1775716600908,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submitted — app redirected to My Items",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716600908,
+          "stop": 1775716604544,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "PAY4820/2026 visible in My Items with status \"Received\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716604544,
+          "stop": 1775716608180,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716608180,
+      "stop": 1775716629996,
+      "steps": [
+        {
+          "name": "Step heading shows \"Assign Branch Finance Admin To Assign Certifier\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716608180,
+          "stop": 1775716611816,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "\"Branch Finance Admin\" field is present and Tania Smith selected",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716611816,
+          "stop": 1775716615452,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit becomes enabled after selection",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716615452,
+          "stop": 1775716619088,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716619088,
+          "stop": 1775716622724,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "App redirects to My Items after Submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716622724,
+          "stop": 1775716626360,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Record visible in My Items with status \"Received\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716626360,
+          "stop": 1775716629996,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

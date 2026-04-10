@@ -1,0 +1,208 @@
+{
+  "uuid": "d5882d26-32fa-40c0-89aa-a183e49dc35c",
+  "historyId": "4cac12906178e7ce031f8e4478840377",
+  "name": "TC-09: Attach Payment Stub (Admin Payment Stubs Import)",
+  "fullName": "BAS E2E > TC-09: Attach Payment Stub (Admin Payment Stubs Import)",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Payment stub file updated with correct SOURCE DOC NUMBER (ITS-E2E-001)\n✅ Admin login successful\n✅ Payment Stub Import page loads\n✅ File uploaded successfully\n✅ Import completes without errors\n✅ History tab shows Payments Confirmed = 1\n✅ Workflow advances to \"Capture Filing\"\n✅ Record visible in Gwenb's Inbox with Action Required \"Capture Filing\" and status \"Paid\"",
+  "descriptionHtml": "",
+  "start": 1775717415000,
+  "stop": 1775717520000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-09"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:admin"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "1m 45s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717415000,
+      "stop": 1775717455380,
+      "steps": [
+        {
+          "name": "Logged in as admin",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717415000,
+          "stop": 1775717423076,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Navigated to `/dynamic/Shesha.SaGovInvoiceTracking/SaGov-payment-stub-imports`",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717423076,
+          "stop": 1775717431152,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Uploaded `training STUB (1).txt` (2.36 kB)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717431152,
+          "stop": 1775717439228,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Clicked Import",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717439228,
+          "stop": 1775717447304,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "History tab — most recent row:",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717447304,
+          "stop": 1775717455380,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717455380,
+      "stop": 1775717519988,
+      "steps": [
+        {
+          "name": "Payment stub file updated with correct SOURCE DOC NUMBER (ITS-E2E-001)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717455380,
+          "stop": 1775717463456,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Admin login successful",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717463456,
+          "stop": 1775717471532,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Payment Stub Import page loads",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717471532,
+          "stop": 1775717479608,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "File uploaded successfully",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717479608,
+          "stop": 1775717487684,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Import completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717487684,
+          "stop": 1775717495760,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "History tab shows Payments Confirmed = 1",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717495760,
+          "stop": 1775717503836,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Workflow advances to \"Capture Filing\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717503836,
+          "stop": 1775717511912,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Record visible in Gwenb's Inbox with Action Required \"Capture Filing\" and status \"Paid\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717511912,
+          "stop": 1775717519988,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

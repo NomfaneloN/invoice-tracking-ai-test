@@ -1,0 +1,208 @@
+{
+  "uuid": "bce8941d-2e8b-4af8-9c00-4698630409ee",
+  "historyId": "066ac3e2b32123ce85538b02db163c45",
+  "name": "TC-07: Authorise Invoice Voucher",
+  "fullName": "BAS E2E > TC-07: Authorise Invoice Voucher",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Step heading \"Authorise Invoice Voucher\" shown, status \"Verified\"\n✅ Confirmation checkbox present and required\n✅ Submit disabled until checkbox checked\n✅ Submit completes without errors\n✅ \"Upload Captured Invoices Report From BAS\" loads inline after submit\n✅ Status updates to \"Approved\"",
+  "descriptionHtml": "",
+  "start": 1775717010000,
+  "stop": 1775717070000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-07"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:thulilem (inline after tc-06)"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "1m 0s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717010000,
+      "stop": 1775717042305,
+      "steps": [
+        {
+          "name": "\"Authorise Invoice Voucher\" loaded inline after TC-06 submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717010000,
+          "stop": 1775717014615,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed step heading \"Authorise Invoice Voucher: Invoice(s) - ITS-E2E-001 | Supplier Name - Maake\", status \"Verified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717014615,
+          "stop": 1775717019230,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Invoice details confirmed: Total Amount R 2500",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717019230,
+          "stop": 1775717023845,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Checked confirmation checkbox: \"I confirm that I have reviewed and approve the invoice, payment details and all supporting information.\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717023845,
+          "stop": 1775717028460,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit enabled — clicked Submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717028460,
+          "stop": 1775717033075,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "\"Upload Captured Invoices Report From BAS\" loaded inline",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717033075,
+          "stop": 1775717037690,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Status updated to \"Approved\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717037690,
+          "stop": 1775717042305,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775717042305,
+      "stop": 1775717069995,
+      "steps": [
+        {
+          "name": "Step heading \"Authorise Invoice Voucher\" shown, status \"Verified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717042305,
+          "stop": 1775717046920,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmation checkbox present and required",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717046920,
+          "stop": 1775717051535,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit disabled until checkbox checked",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717051535,
+          "stop": 1775717056150,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717056150,
+          "stop": 1775717060765,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "\"Upload Captured Invoices Report From BAS\" loads inline after submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717060765,
+          "stop": 1775717065380,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Status updates to \"Approved\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775717065380,
+          "stop": 1775717069995,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

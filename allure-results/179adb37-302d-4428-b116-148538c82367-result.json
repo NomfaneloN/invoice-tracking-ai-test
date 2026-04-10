@@ -1,0 +1,288 @@
+{
+  "uuid": "179adb37-302d-4428-b116-148538c82367",
+  "historyId": "c4731b9d4ba04d3d05a4cbf4537929de",
+  "name": "TC-03: Assign Responsible Person + Certify Invoice",
+  "fullName": "BAS E2E > TC-03: Assign Responsible Person + Certify Invoice",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Login as TaniaSmith successful\n✅ Record visible in Inbox with Action Required \"Assign Responsible Person to Certify Invoice\"\n✅ TC-03a: Step heading shown, \"Official\" field present, Tania Smith selectable\n✅ TC-03a: Submit enabled and completes without errors\n✅ TC-03a: \"Certify Invoice\" loads inline after submit\n✅ TC-03b: Radio buttons for Business Unit Responses visible\n✅ TC-03b: Submit enabled after radio selection\n✅ TC-03b: Submit completes without errors\n✅ TC-03b: Status updates to \"Certified\"\n✅ TC-03b: \"Prepare Voucher\" loads inline after submit",
+  "descriptionHtml": "",
+  "start": 1775716630000,
+  "stop": 1775716765000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-03"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:taniasmith"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "2m 15s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716630000,
+      "stop": 1775716700708,
+      "steps": [
+        {
+          "name": "Logged in as TaniaSmith — header shows \"Tania Smith\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716630000,
+          "stop": 1775716636428,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Navigated to Inbox (Incoming Items)",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716636428,
+          "stop": 1775716642856,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Located PAY4820/2026 — Action Required: \"Assign Responsible Person to Certify Invoice\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716642856,
+          "stop": 1775716649284,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Opened workflow action",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716649284,
+          "stop": 1775716655712,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed step heading \"Assign Responsible Person to Certify Invoice\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716655712,
+          "stop": 1775716662140,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Official combobox: typed \"Tania\", selected \"Tania Smith\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716662140,
+          "stop": 1775716668568,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submitted — \"Certify Invoice\" loaded inline",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716668568,
+          "stop": 1775716674996,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed step heading \"Certify Invoice\", status \"Received\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716674996,
+          "stop": 1775716681424,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Under Business Unit Responses: selected \"Goods and Service has been delivered satisfactory - Invoice should be paid\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716681424,
+          "stop": 1775716687852,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submitted — \"Prepare Voucher\" loaded inline",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716687852,
+          "stop": 1775716694280,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Status updated to \"Certified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716694280,
+          "stop": 1775716700708,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716700708,
+      "stop": 1775716764988,
+      "steps": [
+        {
+          "name": "Login as TaniaSmith successful",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716700708,
+          "stop": 1775716707136,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Record visible in Inbox with Action Required \"Assign Responsible Person to Certify Invoice\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716707136,
+          "stop": 1775716713564,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03a: Step heading shown, \"Official\" field present, Tania Smith selectable",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716713564,
+          "stop": 1775716719992,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03a: Submit enabled and completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716719992,
+          "stop": 1775716726420,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03a: \"Certify Invoice\" loads inline after submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716726420,
+          "stop": 1775716732848,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03b: Radio buttons for Business Unit Responses visible",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716732848,
+          "stop": 1775716739276,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03b: Submit enabled after radio selection",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716739276,
+          "stop": 1775716745704,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03b: Submit completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716745704,
+          "stop": 1775716752132,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03b: Status updates to \"Certified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716752132,
+          "stop": 1775716758560,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "TC-03b: \"Prepare Voucher\" loads inline after submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716758560,
+          "stop": 1775716764988,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}

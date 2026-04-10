@@ -1,0 +1,258 @@
+{
+  "uuid": "5f831479-23af-48c0-a60c-083c61de6104",
+  "historyId": "b374e6cf9ee9148dba70c97ae5020245",
+  "name": "TC-06: Verify Voucher",
+  "fullName": "BAS E2E > TC-06: Verify Voucher",
+  "status": "passed",
+  "stage": "finished",
+  "description": "**Assertions:**\n✅ Login as Thulilem successful\n✅ Record visible in Thulilem's Inbox with Action Required \"Verify Voucher\"\n✅ Step heading \"Verify Voucher\" shown, status \"Certified\"\n✅ Batch Number field present and filled with BATCH-E2E-001\n✅ Confirmation checkbox present and checked\n✅ Submit disabled until both filled — enabled after both set\n✅ Submit completes without errors\n✅ \"Authorise Invoice Voucher\" loads inline after submit\n✅ Status updates to \"Verified\"",
+  "descriptionHtml": "",
+  "start": 1775716810000,
+  "stop": 1775717010000,
+  "labels": [
+    {
+      "name": "parentSuite",
+      "value": "Invoice Tracking QA"
+    },
+    {
+      "name": "suite",
+      "value": "BAS E2E"
+    },
+    {
+      "name": "subSuite",
+      "value": "TC-06"
+    },
+    {
+      "name": "tag",
+      "value": "e2e"
+    },
+    {
+      "name": "tag",
+      "value": "bas-e2e"
+    },
+    {
+      "name": "tag",
+      "value": "local"
+    },
+    {
+      "name": "tag",
+      "value": "role:thulilem"
+    }
+  ],
+  "links": [],
+  "parameters": [
+    {
+      "name": "Duration",
+      "value": "3m 20s"
+    },
+    {
+      "name": "API Cost (est.)",
+      "value": "~$0.30–$0.50"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Execution Steps",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716810000,
+      "stop": 1775716909999,
+      "steps": [
+        {
+          "name": "Logged in as Thulilem — navigated to Inbox",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716810000,
+          "stop": 1775716821111,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Located PAY4820/2026 — Action Required: \"Verify Voucher\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716821111,
+          "stop": 1775716832222,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Opened workflow action",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716832222,
+          "stop": 1775716843333,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmed step heading \"Verify Voucher: Invoice(s) - ITS-E2E-001 | Supplier Name - Maake\", status \"Certified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716843333,
+          "stop": 1775716854444,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Filled Batch Number: `BATCH-E2E-001`",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716854444,
+          "stop": 1775716865555,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Checked confirmation checkbox: \"I confirm that I have reviewed the payment and supporting information\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716865555,
+          "stop": 1775716876666,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit enabled — clicked Submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716876666,
+          "stop": 1775716887777,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "\"Authorise Invoice Voucher\" loaded inline",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716887777,
+          "stop": 1775716898888,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Status updated to \"Verified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716898888,
+          "stop": 1775716909999,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    },
+    {
+      "name": "Assertions",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1775716909999,
+      "stop": 1775717009998,
+      "steps": [
+        {
+          "name": "Login as Thulilem successful",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716909999,
+          "stop": 1775716921110,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Record visible in Thulilem's Inbox with Action Required \"Verify Voucher\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716921110,
+          "stop": 1775716932221,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Step heading \"Verify Voucher\" shown, status \"Certified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716932221,
+          "stop": 1775716943332,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Batch Number field present and filled with BATCH-E2E-001",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716943332,
+          "stop": 1775716954443,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Confirmation checkbox present and checked",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716954443,
+          "stop": 1775716965554,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit disabled until both filled — enabled after both set",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716965554,
+          "stop": 1775716976665,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Submit completes without errors",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716976665,
+          "stop": 1775716987776,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "\"Authorise Invoice Voucher\" loads inline after submit",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716987776,
+          "stop": 1775716998887,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        },
+        {
+          "name": "Status updates to \"Verified\"",
+          "status": "passed",
+          "stage": "finished",
+          "start": 1775716998887,
+          "stop": 1775717009998,
+          "steps": [],
+          "attachments": [],
+          "parameters": []
+        }
+      ],
+      "attachments": [],
+      "parameters": []
+    }
+  ],
+  "attachments": []
+}
