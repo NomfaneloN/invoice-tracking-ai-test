@@ -24,8 +24,8 @@
 | Module      | BAS Request for Payment — Full Workflow                               |
 | URL         | https://pd-invtracking-adminportal-qa.azurewebsites.net/login        |
 | Prereqs     | Mode set to Latest before running any test.                           |
-| Last tested | 2026-04-02                                                            |
-| Status      | TC-01 to TC-10 PASS; TC-11–TC-12 exception paths NOT RUN |
+| Last tested | 2026-04-13                                                            |
+| Status      | TC-01–TC-07 PASS; TC-08 FAIL (duplicate SOURCE DOC NUMBER); TC-09–TC-10 blocked; TC-11–TC-12 NOT RUN |
 
 ---
 
@@ -58,7 +58,7 @@
 - **Prepare Voucher requires both an Outcome radio selection AND a 4-item Yes/No checklist** before Submit is enabled.
 - **Verify Voucher requires a Batch Number (required field) and a confirmation checkbox** before Submit is enabled. Owner is Thulilem (Finance Unit), not Gwenb (Internal Control).
 - **Authorise Invoice Voucher requires only a confirmation checkbox** before Submit is enabled. Step name in the test plan was "Approve Invoice" — actual name is "Authorise Invoice Voucher".
-- **TC-08 requires admin login and BAS Report Import**: After TC-07 (Authorise Invoice Voucher), the "Upload Captured Invoices Report From BAS" step does NOT have a Submit button on the workflow action page. Instead, the BAS report must be uploaded via the **admin portal**: log in as `admin`, navigate to the **"BAS Report Import"** menu item, and upload the prepared BAS Payment Register Excel file. The Excel report must be updated before upload to match the record data captured on the system (blue-background columns: INV RECDTE, SOURCE DOC NUMBER, CAPTURE DATE, AUTH DATE, INV DATE, AMOUNT, PAYEE NAME). SOURCE DOC TYPE is always `SUNDRY`. CAPTURE ID and AUTHORISE ID use persal numbers already in the template. FUNC NO, ENT NUMBER, MICR NO, DISB NO, PAYMTD, and REGION remain unchanged.
+- **TC-08 requires admin login and BAS Report Import**: After TC-07 (Authorise Invoice Voucher), the "Upload Captured Invoices Report From BAS" step does NOT have a Submit button on the workflow action page. Instead, the BAS report must be uploaded via the **admin portal**: log in as `admin`, navigate to the **"BAS Report Import"** menu item, and upload the prepared BAS Payment Register Excel file. The Excel report must be a **real multi-row BAS export** (e.g. the 17 March 2026 file or any file downloaded from the History tab) — the small 1-row E2E template will not work. Update the data row with the current test record values (SOURCE DOC NUMBER, PAYEE NAME, ENT NUMBER, dates, AMOUNT, SOURCE DOC TYPE = SUNDRY). The import uses string dates in DD/MM/YYYY format — do not use Excel serial numbers. Payments Authorised must = 1 in the History tab to confirm success.
 - **TC-09 requires admin login and Payment Stubs Import**: The "Attach Payment Stub" step is completed via the admin portal's **"Payment Stubs Import → Import Payment Stub"** menu. Before uploading, the payment stub text file must be updated with the correct SOURCE DOC NUMBER (Invoice No) and PAYMENT NUMBER, maintaining exact column alignment. After import, verify Payments Confirmed = 1 in the History tab.
 - **Capture Filing requires 3 fields + checkbox**: The "Capture Filing" step (TC-10, Gwenb) requires Batch Number, Box Number, and File Range (all required, marked with *), plus a confirmation checkbox. Submit is disabled until all fields are filled and the checkbox is checked.
 
@@ -82,7 +82,7 @@
   11. Verify Supplier Details panel populates with supplier info
   12. Fill Description
   13. In the Invoices table, fill Invoice Date and Service Delivery Date
-  14. Fill Invoice No with `ITS-E2E-001`
+  14. Fill Invoice No with `ITS-E2E-[YYYYMMDD]` — use today's date (e.g. `ITS-E2E-20260413`). **Never reuse an invoice number from a previous run** — duplicate SOURCE DOC NUMBERs will break TC-08.
   15. Fill Invoice Amount with `2500`
   16. Upload Invoice Attachment (required — click the upload button in the Invoice Attachment column and select any local file)
   17. Click the plus-circle button to confirm the invoice row
@@ -98,7 +98,7 @@
   | Description            | E2E BAS test run    | Text                          |
   | Invoice Date           | Today's date        | Date picker                   |
   | Service Delivery Date  | Today's date        | Date picker                   |
-  | Invoice No             | ITS-E2E-001         | Text                          |
+  | Invoice No             | ITS-E2E-[YYYYMMDD] (e.g. ITS-E2E-20260413) | Text — must be unique per run |
   | Invoice Amount         | 2500                | Number                        |
   | Invoice Attachment     | Any local file      | File upload                   |
 - **Expected result:** BAS Request for Payment is created, submitted, and visible in My Items with status "Received" and a Ref No assigned
@@ -110,7 +110,7 @@
   - [ ] Date Received auto-populated with today's date
   - [ ] Supplier Name selected and Supplier Details panel populated
   - [ ] Description filled
-  - [ ] Invoice row added with Invoice No ITS-E2E-001, Invoice Amount 2500
+  - [ ] Invoice row added with Invoice No ITS-E2E-[YYYYMMDD], Invoice Amount 2500
   - [ ] Invoice Attachment uploaded successfully
   - [ ] Total Amount reflects 2500
   - [ ] Form submits without errors
@@ -133,7 +133,7 @@
   6. Click Submit
   7. Confirm any dialog if prompted
   8. Verify the app redirects to **My Items** (post-submit from this step goes to My Items, not inline)
-  9. Locate PAY4718/2026 at the top of My Items list with status "Received"
+  9. Locate the record (by the Ref No noted in TC-01) at the top of My Items list with status "Received"
 - **Expected result:** "Assign Branch Finance Admin To Assign Certifier" step completes, Tania Smith is assigned, and the app redirects to My Items
 - **Assertions:**
   - [ ] Step heading shows "Assign Branch Finance Admin To Assign Certifier"
@@ -203,33 +203,133 @@
 
 ## TC-05: Prepare Voucher
 > **[UPDATED 2026-04-02]** Step owner changed from Thulilem (Finance Unit) to TaniaSmith (Business Unit). Step now has an Outcome radio (4 options) and a 4-item Yes/No Business Unit Response checklist. Step loads inline after TC-03b submit.
+> **[UPDATED 2026-04-13]** Split into 4 sub-TCs, one per Outcome option. TC-05a is the happy path; TC-05b–TC-05d are exception paths.
+
+> **Known behaviour (all sub-TCs):**
+> - Submit is disabled until both an Outcome radio and all 4 Business Unit Response items are answered.
+> - Exception path outcomes (TC-05b, TC-05c, TC-05d) trigger a confirmation dialog on Submit requiring a query/reason comment before Ok is enabled.
+> - After the exception path is resolved (TC-11 or TC-12), the workflow loops back to "Prepare Voucher" with all selections reset — TaniaSmith must re-select an Outcome and re-answer the checklist before re-submitting.
+
+---
+
+## TC-05a: Prepare Voucher — Verification is Complete (Happy Path)
 
 - **Type:** Happy path (workflow)
-- **Login:** TaniaSmith (Business Unit) — step loads inline after Certify Invoice
+- **Login:** TaniaSmith (Business Unit) — step loads inline after TC-03b
 - **Prereq:** TC-03b must pass
 - **Steps:**
   1. After TC-03b submit, the "Prepare Voucher" step loads **inline**
   2. Snapshot to confirm step heading is "Prepare Voucher" and status is "Certified"
-  3. Under **"Outcome"**, select: `Verification is complete`
+  3. Under **"Outcome"**, select: `Verification is complete` (1st radio button)
   4. Under **"Business Unit Response"**, answer all 4 checklist items with **Yes**:
      - "Received ALL the different supporting documents."
-     - "Prepare a payment voucher pack using a checklist of ALL documents needed..."
-     - "Confirms the work performed on the Invoice Tracking system ready for transfer..."
-     - "Reconcile the physical list of Vouchers prepared..."
+     - "Prepare a payment voucher pack using a checklist of ALL documents needed to validate the transaction to be paid."
+     - "Confirms the work performed on the Invoice Tracking system ready for transfer of readily prepare voucher packs to be transferred to the next level of payment process which is the Pre-check (Verification) point."
+     - "Reconcile the physical list of Vouchers prepared, with the system Invoice records and hand over to the Pre-Check (Verification) point."
   5. Snapshot to confirm Submit is now enabled
   6. Click Submit
   7. Confirm any dialog if prompted
   8. Verify the app redirects to **My Items**
-  9. The record is no longer in TaniaSmith's queue (passed to next owner)
-- **Expected result:** Voucher is prepared, all checklist items answered Yes, and the workflow advances
+  9. Verify the record is no longer in TaniaSmith's queue (passed to next owner — Thulilem for TC-06)
+- **Expected result:** Voucher prepared and submitted with "Verification is complete"; workflow advances to TC-06 (Verify Voucher)
 - **Assertions:**
   - [ ] Step heading "Prepare Voucher" shown with status "Certified"
   - [ ] "Outcome" radio buttons present with 4 options
   - [ ] "Business Unit Response" checklist present with 4 Yes/No questions
-  - [ ] Submit enabled after Outcome selected and all checklist items answered
+  - [ ] Submit disabled until Outcome selected and all 4 checklist items answered
   - [ ] Submit completes without errors
   - [ ] App redirects to My Items after Submit
   - [ ] Record no longer in TaniaSmith's queue
+
+---
+
+## TC-05b: Prepare Voucher — Send for Supplier Related Query (Exception Path)
+
+- **Type:** Exception path (workflow)
+- **Login:** TaniaSmith (Business Unit) — step loads inline after TC-03b
+- **Prereq:** TC-03b must pass
+- **Next step:** TC-11 (Manage Supplier Related Queries)
+- **Steps:**
+  1. After TC-03b submit, the "Prepare Voucher" step loads **inline**
+  2. Snapshot to confirm step heading is "Prepare Voucher" and status is "Certified"
+  3. Under **"Outcome"**, select: `Send for supplier related query` (2nd radio button)
+  4. Under **"Business Unit Response"**, answer all 4 checklist items (Yes/No as appropriate)
+  5. Snapshot to confirm Submit is now enabled
+  6. Click Submit
+  7. A **"Send for supplier related query"** dialog appears — enter a query comment describing the supplier issue
+  8. Click **Ok** to confirm
+  9. Verify the workflow advances to **"Manage Supplier Related Queries"** step inline (no redirect to My Items)
+  10. Verify status updates to **"Awaiting Supplier Response"**
+  11. Continue to TC-11 to resolve the query
+- **Expected result:** Workflow routes to "Manage Supplier Related Queries" with status "Awaiting Supplier Response"; query comment is recorded and visible as an info message on the next step
+- **Known bug:** The confirmation dialog hint text reads "You selected 'Send for business relatd query'. Please write a query." — the outcome label is wrong (should say 'supplier') and contains a typo ('relatd'). See UI/UX issue logged in bas-2026-04-13T12-03.md.
+- **Assertions:**
+  - [ ] Step heading "Prepare Voucher" shown with status "Certified"
+  - [ ] "Outcome" radio buttons present with 4 options
+  - [ ] "Business Unit Response" checklist present with 4 Yes/No questions
+  - [ ] Submit disabled until Outcome selected and all 4 checklist items answered
+  - [ ] Submit triggers "Send for supplier related query" dialog
+  - [ ] Dialog requires a comment before Ok is enabled
+  - [ ] After Ok, "Manage Supplier Related Queries" loads inline
+  - [ ] Status updates to "Awaiting Supplier Response"
+  - [ ] Query comment is visible as an info message on the Manage Supplier Related Queries step
+
+---
+
+## TC-05c: Prepare Voucher — Send for Business Related Query (Exception Path)
+
+- **Type:** Exception path (workflow)
+- **Login:** TaniaSmith (Business Unit) — step loads inline after TC-03b
+- **Prereq:** TC-03b must pass
+- **Steps:**
+  1. After TC-03b submit, the "Prepare Voucher" step loads **inline**
+  2. Snapshot to confirm step heading is "Prepare Voucher" and status is "Certified"
+  3. Under **"Outcome"**, select: `Send for business related query` (3rd radio button)
+  4. Under **"Business Unit Response"**, answer all 4 checklist items (Yes/No as appropriate)
+  5. Snapshot to confirm Submit is now enabled
+  6. Click Submit
+  7. A confirmation dialog appears — enter a query comment describing the business issue
+  8. Click **Ok** to confirm
+  9. Verify the workflow advances to the appropriate business query step inline
+  10. Note the status shown and step title for reporting
+- **Expected result:** Workflow routes to the business-related query handling step; query comment is recorded
+- **Assertions:**
+  - [ ] Step heading "Prepare Voucher" shown with status "Certified"
+  - [ ] "Outcome" radio buttons present with 4 options
+  - [ ] "Business Unit Response" checklist present with 4 Yes/No questions
+  - [ ] Submit disabled until Outcome selected and all 4 checklist items answered
+  - [ ] Submit triggers a confirmation dialog requiring a comment
+  - [ ] After Ok, workflow advances to the business query handling step
+  - [ ] New step title and status are visible and recorded
+
+---
+
+## TC-05d: Prepare Voucher — Reject Invoice (Exception Path)
+
+- **Type:** Exception path (workflow)
+- **Login:** TaniaSmith (Business Unit) — step loads inline after TC-03b
+- **Prereq:** TC-03b must pass
+- **Next step:** TC-12 (Review Rejected Invoice) — handled by Thulilem (Finance Unit)
+- **Steps:**
+  1. After TC-03b submit, the "Prepare Voucher" step loads **inline**
+  2. Snapshot to confirm step heading is "Prepare Voucher" and status is "Certified"
+  3. Under **"Outcome"**, select: `Reject Invoice` (4th radio button)
+  4. Under **"Business Unit Response"**, answer all 4 checklist items (Yes/No as appropriate)
+  5. Snapshot to confirm Submit is now enabled
+  6. Click Submit
+  7. A confirmation dialog may appear — enter a rejection reason if prompted
+  8. Click **Ok** to confirm
+  9. Verify the workflow advances to the rejection handling step (expected: TC-12 / "Review Rejected Invoice" for Thulilem)
+  10. Note the status shown and step title for reporting
+- **Expected result:** Invoice is rejected; workflow routes to TC-12 (Review Rejected Invoice) for Thulilem to take corrective action
+- **Assertions:**
+  - [ ] Step heading "Prepare Voucher" shown with status "Certified"
+  - [ ] "Outcome" radio buttons present with 4 options
+  - [ ] "Business Unit Response" checklist present with 4 Yes/No questions
+  - [ ] Submit disabled until Outcome selected and all 4 checklist items answered
+  - [ ] Submit completes without errors (with or without dialog)
+  - [ ] Workflow advances to rejection handling step
+  - [ ] New step title and status visible and recorded
 
 ---
 
@@ -301,26 +401,29 @@
 - **Type:** Happy path (workflow — admin action)
 - **Login:** admin (Admin portal)
 - **Prereq:** TC-07 must pass; BAS Payment Register Excel template available
-- **BAS Report File:** `c:\Users\Promise\Downloads\BAS Payment Register for 17 MARCH 2026 2 2.xlsx`
+- **BAS Report File:** Use one of the following — both are confirmed to work:
+  - `c:\Users\Promise\Downloads\BAS Payment Register for 17 MARCH 2026 2 2.xlsx` (or equivalent multi-row BAS export)
+  - Any real BAS Payment Register export downloaded from the admin BAS Report Import **History** tab (e.g. `Payment Register for 09 June 2025 CAPTURED1.xlsx`)
+  - **Do NOT use the small 1-row E2E template files** — they produce Matched: 0 and will never advance the workflow
 
 ### Step A: Prepare the BAS Payment Register Excel
 Before uploading, update the **blue-background columns** in the Excel to match the system record:
 
 | Column | Source | Notes |
 |--------|--------|-------|
-| INV RECDTE | Date Received from TC-01 | Format: YYYY-MM-DD |
-| SOURCE DOC NUMBER | Invoice No from TC-01 (e.g. ITS-E2E-001) | Must match exactly |
+| INV RECDTE | Date Received from TC-01 | String format DD/MM/YYYY — must match the file's existing date format |
+| SOURCE DOC NUMBER | Invoice No from TC-01 (e.g. ITS-E2E-20260413) | Must match exactly — **unique per run** |
 | PAYSTA | AUTH | Always AUTH at this point |
 | PAYEE NAME | Supplier Name from TC-01 (e.g. Maake) | Must match exactly |
-| CAPTURE DATE | Date the record was captured (TC-01 date) | Format: YYYY-MM-DD |
-| AUTH DATE | Date the record was authorised (TC-07 date) | Format: YYYY-MM-DD |
-| INV DATE | Invoice Date from TC-01 | Format: YYYY-MM-DD |
+| ENT NUMBER | Supplier entity number — Maake = Maaa123 | Update to match the supplier used in TC-01 |
+| CAPTURE DATE | Date the record was captured (TC-01 date) | String format DD/MM/YYYY |
+| AUTH DATE | Date the record was authorised (TC-07 date) | String format DD/MM/YYYY |
+| INV DATE | Invoice Date from TC-01 | String format DD/MM/YYYY |
 | SOURCE DOC TYPE | SUNDRY | Always SUNDRY for BAS |
 | AMOUNT | Invoice Amount from TC-01 (e.g. 2500) | Must match exactly |
-| CAPTURE ID | Persal number — keep existing value in template | Do not change |
-| AUTHORISE ID | Persal number — keep existing value in template | Do not change |
-| FUNC NO | Keep existing value in template | Do not change |
-| ENT NUMBER | Keep existing value in template | Do not change |
+| CAPTURE ID | Persal number — keep existing value in the row | Do not change |
+| AUTHORISE ID | Persal number — keep existing value in the row | Do not change |
+| FUNC NO | Keep existing value in the row | Do not change |
 
 - **Steps (Excel prep):**
   1. Open the BAS Payment Register Excel file

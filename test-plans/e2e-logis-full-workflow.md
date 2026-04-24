@@ -29,16 +29,21 @@
 
 ---
 
-## Accounts Used
+## Accounts Used (verified against actual QA routing on 2026-04-21)
 | Role                      | Username                          | Password | Used In                       |
 |---------------------------|-----------------------------------|----------|-------------------------------|
 | SCM                       | Moshadim                          | 123qwe   | TC-01, TC-06, TC-07           |
 | Business Unit             | TaniaSmith                        | 123qwe   | TC-02, TC-05, TC-14, TC-15    |
-| Business Unit Supervisor  | Tiyih                             | 123qwe   | TC-03                         |
-| SCM Supervisor            | Eunicem                           | 123qwe   | TC-04, TC-13                  |
+| Finance Unit              | Thulilem                          | 123qwe   | TC-03 (Approve Invoice — happens EARLY, right after Certify) |
+| Branch Finance            | **sarahm** (Sarah Mohlala)        | 123qwe   | TC-04 (primary; fallbacks: jackb, monicak, mahlatsem) |
 | Internal Control          | Gwenb                             | 123qwe   | TC-08, TC-11                  |
-| Finance Unit              | Thulilem                          | 123qwe   | TC-09, TC-10, TC-12, TC-15    |
+| Admin                     | Admin                             | 123qwe   | TC-09 (BAS Report Import), TC-10 (Payment Stubs Import) |
+| SCM Supervisor            | Eunicem                           | 123qwe   | TC-13 (exception path only — not used in happy path) |
+| Business Unit Supervisor  | Tiyih                             | 123qwe   | **NOT USED** in LOGIS happy path (TC-15 exception only) |
 | Supplier                  | Thulile.Matekanya@boxfusion.io    | 123qwe   | Reference only                |
+
+### Happy-path sequence at a glance
+`Moshadim → TaniaSmith → Thulilem → sarahm → TaniaSmith → Moshadim → Moshadim → Gwenb → Admin (BAS import) → Admin (Stub import) → Gwenb`
 
 ---
 
@@ -49,6 +54,16 @@
 - **Draft record created on form open.** The application creates and persists a Draft record (with a Ref No) the moment "Create New → LOGIS Request For Payment" is clicked, before any fields are filled. Closing without submitting leaves an orphaned Draft in the Drafts section.
 - **Submit button is disabled** when required fields are empty. This is the primary validation mechanism — there are no field-level inline error messages.
 - **Workflow steps may require selecting an assignee** before Submit is enabled. Always snapshot the workflow action page and check for required fields before clicking Submit.
+- **TC-01 form is Order-first.** The current LOGIS form asks for Order No FIRST (entity picker). Selecting the Order auto-populates Supplier, Business Unit, Email, and Order Description. Then add the invoice row (Invoice Date, Service Delivery Date, Invoice No, Amount, Attachment) and click plus-circle to commit, then Submit.
+- **TC-03 is Approve Invoice by Thulilem (Finance), NOT Tiyih (BU Supervisor).** After Certify at TC-02, the record goes directly to Thulilem's inbox labelled "Approve Invoice". Tiyih is never used in the happy path. (Originally the test plan had Tiyih at TC-03 — confirmed wrong on 2026-04-21 runs.)
+- **TC-04 is assigned to `sarahm` (Sarah Mohlala) — Branch Finance — NOT Eunicem (SCM Supervisor).** Confirmed via progress-hover tooltip on 2026-04-21. Alternate assignees: `jackb`, `monicak`, `mahlatsem`. Eunicem only appears in TC-13 exception path.
+- **TC-06 Capture and Link requires Payment Number on the invoice row (inline editor).** Click into the Payment Number textbox on the existing invoice row, type the Ref No digits (e.g. `5554` for PAY5554/2026), then click the small inline "save" icon to commit the row. Submit is only enabled after: Payment Number saved, "Yes" radio for "Should payment proceed?", and the "I confirm that I have captured this invoice on payment system" checkbox/button ticked.
+- **TC-09 Final Authorise Payment has NO workflow-action UI.** There is no inbox entry for this step. The record advances when Admin imports a matching BAS Payment Register (`sidebar → BAS Report → BAS Report Import → upload → Import`). A successful advance shows `Is Success: Yes` and `Payments Authorised: 1` in the History tab.
+- **TC-10 Attach Payment Stub also has NO workflow-action UI.** The record advances when Admin imports the matching payment stub (`sidebar → Payment Stubs Import → Import Payment Stub → upload → Import`). Success = `Is Success: Yes` and `Payments Confirmed: 1` in History. Only after this does the record status become `Paid`.
+- **Progress indicator hover is the source of truth for "who's assigned now".** On the record detail page (`/shesha/workflow?id=…`), hover over each of the 11 progress dots above the heading to see tooltips like `Verify Voucher | Gwen Simbeni | Received on: ...`. This is faster and more reliable than checking each user's inbox.
+- **LOGIS stub field mapping differs from BAS.** For LOGIS stubs: Source Doc Number = Invoice Number (from TC-01), Purchase Order Number = Order Number (from TC-01). BAS stubs use `NOT APPLIC` for Purchase Order. Payment Number = record Ref No digits; Amount must match the invoice total.
+- **Order entity picker search — Enter key does not work.** Typing an order number and pressing Enter returns "No Data". Clear the input via JavaScript (native value setter + input/change events), then click the search icon. Alternatively, browse pages to find the correct order row and double-click to select.
+- **TC-01 must be run as Moshadim (not Admin).** Workflow routing downstream depends on the creator's SCM role. Running TC-01 as Admin causes routing problems.
 
 ---
 
@@ -131,56 +146,42 @@
 
 ---
 
-## TC-03: Approve Invoice (Business Unit Supervisor)
+## TC-03: Approve Invoice (Finance Unit — Thulilem)
 - **Type:** Happy path (workflow)
-- **Login:** Tiyih (Business Unit Supervisor)
+- **Login:** **Thulilem (Finance Unit)** — NOT Tiyih. Confirmed via progress-hover on 2026-04-21 runs: after TC-02 Certify, the record routes directly to Thulilem's inbox labelled "Approve Invoice". Tiyih is NOT used in the LOGIS happy path.
 - **Prereq:** TC-02 must pass
+- **IMPORTANT:** Don't confuse with the later Final Authorise step. This is the early Finance Approve (step 3 in the real workflow), happens straight after Certify.
 - **Steps:**
-  1. Navigate to the login page and log in as `Tiyih` with password `123qwe`
-  2. Verify login successful
-  3. Navigate to Inbox
-  4. Locate the TC-01 record and open it
-  5. Snapshot to confirm the current workflow step is "Approve Invoice"
-  6. Complete any required fields on the workflow action page
-  7. Snapshot to confirm Submit is enabled
-  8. Click Submit
-  9. Confirm any dialog if prompted
-  10. Verify the step completes and the workflow advances
-- **Expected result:** Invoice is approved by the Business Unit Supervisor and the workflow advances
+  1. Log out TaniaSmith, log in as `Thulilem` with password `123qwe`
+  2. Navigate to Inbox, search the PAY Ref No from TC-01
+  3. The record's Action column = `Approve Invoice`, Status = `Certified`. Open it.
+  4. Select radio **"Goods and Service has been delivered satisfactory - Invoice should be paid"** (value 1, happy path)
+  5. Click Submit
+- **Expected result:** Record advances; appears in `sarahm`'s inbox at "Assign Responsible Official"
 - **Assertions:**
-  - [ ] Login as Tiyih successful
-  - [ ] Record is visible in Tiyih's Inbox
-  - [ ] Workflow step "Approve Invoice" is shown
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] Thulilem login successful
+  - [ ] Record at `Approve Invoice` in Thulilem's Inbox with status `Certified`
+  - [ ] Happy-path radio selected
+  - [ ] Submit completes; workflow advances
 
 ---
 
-## TC-04: Assign Responsible Official
+## TC-04: Assign Responsible Official (Branch Finance — sarahm)
 - **Type:** Happy path (workflow)
-- **Login:** Eunicem (SCM Supervisor)
+- **Login:** **sarahm (Sarah Mohlala — Branch Finance)** — NOT Eunicem. Confirmed across 2026-04-20 and 2026-04-21 runs. Fallback users if sarahm unavailable: `jackb`, `monicak`, `mahlatsem`. Eunicem (SCM Supervisor) is only used in TC-13 exception path.
 - **Prereq:** TC-03 must pass
 - **Steps:**
-  1. Navigate to the login page and log in as `Eunicem` with password `123qwe`
-  2. Verify login successful
-  3. Navigate to Inbox or My Items
-  4. Locate the TC-01 record and open it
-  5. Snapshot to confirm the current workflow step is "Assign Responsible Official"
-  6. On the workflow action page, locate the responsible official assignment field
-  7. Select the appropriate responsible official
-  8. Snapshot to confirm the selection and that Submit is now enabled
-  9. Click Submit
-  10. Confirm any dialog if prompted
-  11. Verify the step completes and the workflow advances
-- **Expected result:** Responsible official is assigned and the workflow advances to the next step
+  1. Log out Thulilem, log in as `sarahm` with password `123qwe`
+  2. Navigate to Inbox, search the PAY Ref No
+  3. Open the record; Action = `Assign Responsible Official`
+  4. Click the `Official` combobox; type `Tania` in the search; select `Tania Smith`
+  5. Click Submit
+- **Expected result:** Record advances; appears in Tania's inbox at "Verify Invoice"
 - **Assertions:**
-  - [ ] Login as Eunicem successful
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Assign Responsible Official" is shown
-  - [ ] Responsible official field is present and selectable
-  - [ ] Submit becomes enabled after selection
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
+  - [ ] sarahm login successful
+  - [ ] Record at `Assign Responsible Official` in her Inbox
+  - [ ] Official combobox searchable; Tania Smith selected
+  - [ ] Submit completes; workflow advances
 
 ---
 
@@ -283,100 +284,109 @@
 
 ---
 
-## TC-09: Approve Invoice (Finance Unit)
-- **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-08 must pass
+## TC-09: Approve Invoice (Finance Unit) — **ALREADY DONE AT TC-03, SKIP**
+- **Type:** ⚠️ **Obsolete — do not run.** The original test plan placed Finance Approve at TC-09, but the actual QA workflow runs it at step 3 (right after Certify). This TC-09 was handled by TC-03 (Approve Invoice — Finance Unit — Thulilem). Leave this entry in the plan for historical reference but skip it in execution.
+- **If you see the record at "Approve Invoice" action assigned to Thulilem AFTER TC-08**, something is wrong with the workflow routing — investigate via progress-hover. In the standard happy path, after TC-08 Verify Voucher the next step is TC-10 Final Authorise Payment (Admin BAS import).
+- **Assertions:**
+  - [x] SKIPPED — equivalent step was performed at TC-03
+
+---
+
+## TC-10: Final Authorise Payment (Admin — via BAS Report Import)
+- **Type:** Happy path — **NO workflow-action UI; advance via Admin BAS Report import**
+- **Login:** **Admin** — NOT Thulilem. There is no inbox entry for this step; Thulilem is the conceptual role but the advancement is done by Admin importing a matching BAS Payment Register.
+- **Prereq:** TC-08 must pass; record at "Final Authorise Payment" (confirm via progress-hover on the record detail page — won't appear in any user's Inbox)
+- **Note (file prep):** The backend matches the BAS row by FUNC NO / SOURCE DOC NUMBER / AMOUNT, but **also requires H10/O10/P10/Q10 date columns to be today's date** or the auto-authorise trigger silently skips (Matched: 1 / Payments Authorised: 0). Headers are on row 9 of the .xlsx, data on row 10.
 - **Steps:**
-  1. Navigate to the login page and log in as `Thulilem` with password `123qwe`
-  2. Verify login successful
-  3. Navigate to Inbox or My Items
-  4. Locate the TC-01 record and open it
-  5. Snapshot to confirm the current workflow step is "Approve Invoice"
-  6. Complete any required fields on the workflow action page
+  1. Prepare `test-data/bas-registers/BAS Payment Register LOGIS-<tag>.xlsx` by copying an existing LOGIS BAS register and editing **7 cells** (previously this said 3 — that's wrong, stale dates in the 4 date columns will cause the import to silently fail):
+     - **C10 FUNC NO** = Ref No digits, numeric type (e.g. `5592` for PAY5592/2026)
+     - **H10 INV RECDTE** = today's Excel serial, numeric (e.g. `46134` for 2026-04-22)
+     - **I10 SOURCE DOC NUMBER** = Invoice No from TC-01, string (e.g. `ITS-LOGIS-20260422-S`)
+     - **O10 CAPTURE DATE** = today's Excel serial, numeric
+     - **P10 AUTH DATE** = today's Excel serial, numeric
+     - **Q10 INV DATE** = today's Excel serial, numeric
+     - **T10 AMOUNT** = invoice total, numeric (e.g. `2000`)
+     - (Excel serial helper: `Math.floor((new Date('YYYY-MM-DD') - new Date('1899-12-30')) / 86400000)`)
+     - (Fast method: node+xlsx script — set ws.C10.v, ws.H10.v, ws.I10.v, ws.O10.v, ws.P10.v, ws.Q10.v, ws.T10.v and writeFile)
+  2. Log in as `Admin` with password `123qwe`
+  3. Sidebar → `BAS Report` → `BAS Report Import`
+  4. Click `press to upload`, select the prepared `.xlsx`, click `Import`
+  5. Click the `History` tab; verify top row:
+     - Is Success: `Yes`
+     - **Payments Authorised: `1`** (if 0, check FUNC NO / SOURCE DOC / AMOUNT match the pending record exactly)
+- **Expected result:** Record advances to "Attach Payment Stub" — another Admin-import step handled by TC-11
+- **Assertions:**
+  - [ ] BAS .xlsx has correct FUNC NO, SOURCE DOC, AMOUNT in row 10
+  - [ ] Admin login successful
+  - [ ] BAS Report Import page loads
+  - [ ] Upload + Import complete without error
+  - [ ] History top row: `Is Success: Yes`, `Payments Authorised: 1`
+
+---
+
+## TC-11: Attach Payment Stub
+- **Type:** Happy path (workflow)
+- **Login:** Admin (System Administrator) — uploads the stub on behalf of the Attach Payment Stub step, even though the step is assigned to Thulilem (Finance Unit)
+- **Prereq:** TC-10 must pass; the record should be at the "Attach Payment Stub" step in Thulilem's inbox
+- **Note:** The stub upload is performed via Admin's **Payment Stubs Import** (sidebar menu → `Payment Stubs Import → Import Payment Stub`), NOT via the workflow action page. Before importing, open the stub file and confirm all four fields match the current record.
+- **Steps:**
+  1. Open `test-data/payment-stubs/training STUB LOGIS-<YYYYMMDD>.txt` (or the current LOGIS stub) and verify/update:
+     - **SOURCE DOC NUMBER** = Invoice Number from TC-01 (e.g. `ITS-LOGIS-20260421`)
+     - **PURCHASE ORDER NUMBER** = Order Number from TC-06 (e.g. `ORDER-00024`) — NOT `NOT APPLIC`
+     - **PAYMENT NUMBER** = record Ref No digits (e.g. `5541` for PAY5541/2026)
+     - **AMOUNT** = invoice total (e.g. `3,000.00`)
+  2. Log in as `Admin` with password `123qwe`
+  3. In the sidebar, click `Payment Stubs Import` → `Import Payment Stub`
+  4. Click the upload button (press to upload) and select the updated stub file
+  5. Click the `Import` button
+  6. Wait for the import to complete (file field clears, Import button disables)
+  7. Click the `History` tab and verify the top row shows:
+     - Is Success: `Yes`
+     - Rows Affected: `1`, Rows Skipped: `0`
+     - **Payments Confirmed: `1`** (if 0, the record was not at the Attach Payment Stub step — re-check the workflow state)
+  8. Log out of Admin. Log in as `Thulilem` (or any role) and verify the record has advanced — it should no longer be in Thulilem's inbox at "Attach Payment Stub"; it should now be in Gwenb's inbox at "Capture Filling" with status `Paid`
+- **Expected result:** Payment stub is imported successfully, payment is confirmed, record status changes to `Paid`, and the workflow advances to Capture Filling (TC-12)
+- **Assertions:**
+  - [ ] Stub file fields updated: Source Doc = Invoice No, Purchase Order = Order No, Payment Number = record Ref No, Amount matches
+  - [ ] Admin login successful
+  - [ ] Payment Stubs Import page loads
+  - [ ] File uploads without errors
+  - [ ] Import button enables after file selection
+  - [ ] Import completes (file field clears, button disables)
+  - [ ] History tab shows `Is Success: Yes`, `Rows Affected: 1`, `Rows Skipped: 0`, `Payments Confirmed: 1`
+  - [ ] Record status updates to `Paid`
+  - [ ] Record appears in Gwenb's inbox at "Capture Filling" step
+
+---
+
+## TC-12: Capture Filing
+- **Type:** Happy path (workflow — final step)
+- **Login:** Gwenb (Internal Control)
+- **Prereq:** TC-11 must pass — record must have advanced to Capture Filing with status `Paid`
+- **Steps:**
+  1. Log in as `Gwenb` with password `123qwe`
+  2. Navigate to Inbox
+  3. Locate the TC-01 record (status `Paid`, action `Capture Filling`) and open it
+  4. Snapshot to confirm the current workflow step is "Capture Filling"
+  5. Fill the Filing Details fields (all required):
+     - **Batch Number** (e.g. `BATCH-20260421`)
+     - **Box Number** (e.g. `BOX-01`)
+     - **File Range** (e.g. `1-10`)
+  6. Tick the confirmation checkbox: "I confirm that I have captured all the filing details under which the invoice is stored."
   7. Snapshot to confirm Submit is enabled
   8. Click Submit
   9. Confirm any dialog if prompted
-  10. Verify the step completes and the workflow advances
-- **Expected result:** Invoice is approved by the Finance Unit and the workflow advances
-- **Assertions:**
-  - [ ] Login as Thulilem successful
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Approve Invoice" (Finance Unit) is shown
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
-
----
-
-## TC-10: Final Authorise Payment
-- **Type:** Happy path (workflow)
-- **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-09 must pass
-- **Steps:**
-  1. Log in as `Thulilem` (if not already logged in)
-  2. Navigate to Inbox or My Items
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Final Authorise Payment"
-  5. Complete any required fields on the workflow action page
-  6. Snapshot to confirm Submit is enabled
-  7. Click Submit
-  8. Confirm any dialog if prompted
-  9. Verify the step completes and the workflow advances
-- **Expected result:** Payment is finally authorised and the workflow advances to the next step
-- **Assertions:**
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Final Authorise Payment" is shown
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
-
----
-
-## TC-11: Capture Filling
-- **Type:** Happy path (workflow)
-- **Login:** Gwenb (Internal Control)
-- **Prereq:** TC-10 must pass
-- **Steps:**
-  1. Log in as `Gwenb` (if not already logged in)
-  2. Navigate to Inbox
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Capture Filling"
-  5. Complete any required fields on the workflow action page
-  6. Snapshot to confirm Submit is enabled
-  7. Click Submit
-  8. Confirm any dialog if prompted
-  9. Verify the step completes and the workflow advances
-- **Expected result:** Filling is captured and the workflow advances to the final step
-- **Assertions:**
-  - [ ] Record is visible in Gwenb's Inbox
-  - [ ] Workflow step "Capture Filling" is shown
-  - [ ] Submit completes without errors
-  - [ ] Workflow step advances after Submit
-
----
-
-## TC-12: Attach Payment Stub
-- **Type:** Happy path (workflow — final step)
-- **Login:** Thulilem (Finance Unit)
-- **Prereq:** TC-11 must pass
-- **Steps:**
-  1. Log in as `Thulilem` (if not already logged in)
-  2. Navigate to Inbox or My Items
-  3. Locate the TC-01 record and open it
-  4. Snapshot to confirm the current workflow step is "Attach Payment Stub"
-  5. On the workflow action page, locate the payment stub upload field
-  6. Upload a local file as the payment stub
-  7. Snapshot to confirm the file is attached and Submit is enabled
-  8. Click Submit
-  9. Confirm any dialog if prompted
-  10. Verify the record status updates to "Paid"
+  10. Verify redirect to My Items and that the record is no longer in Gwenb's inbox at Capture Filing
   11. Verify the workflow progress bar shows all steps complete
-- **Expected result:** Payment stub is attached, record status changes to "Paid", and the full LOGIS workflow is complete
+- **Expected result:** Filing details are captured, the workflow completes, and the full LOGIS workflow is done
 - **Assertions:**
-  - [ ] Record is accessible in Inbox or My Items
-  - [ ] Workflow step "Attach Payment Stub" is shown
-  - [ ] Payment stub file upload field is present and accepts a local file
+  - [ ] Login as Gwenb successful
+  - [ ] Record is visible in Gwenb's Inbox at "Capture Filling" with status `Paid`
+  - [ ] Batch Number, Box Number, File Range fields are present, required, and fillable
+  - [ ] Confirmation checkbox is present and tickable
+  - [ ] Submit button enables only after all three fields are filled and the checkbox is ticked
   - [ ] Submit completes without errors
-  - [ ] Record status updates to "Paid"
+  - [ ] Record is no longer in Gwenb's inbox after submit
   - [ ] Workflow progress bar shows all steps complete
   - [ ] No further workflow actions are available
 

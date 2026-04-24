@@ -1,0 +1,28 @@
+                                                               LOGIS                                            DATE: 15/04/2026
+20001                                                   NAT: HOME AFFAIRS                                        TIME: 14:00:00
+RP107LS                                                    PAYMENT STUB                                          PAGE     1
+
+ CONTACT PERSON          : MS M KABINI / MS MAZWI                                  CONTACT TEL NO : 012 406 2772 / 2764
+ INSTALLATION DESCRIPTION: NAT: HOME AFFAIRS                                       DISBURSEMENT NO: 0001901199
+ LOCATION DESCRIPTION    : NAT: HOME AFFAIRS                                       ACTION DATE    : 15/04/2026
+
+
+ PAYEE NAME     : GEMINI MOON TRADING 7                                            BANK NAME   : FIRST NATIONAL BANK
+ PAYMENT ADDRESS: 265 WEST AVENUE                                                  BANK BRANCH : PRETORIA CENTRAL
+                  CENTURION                                                         ACCOUNT TYPE: CURRENT
+                  0157                                                              ACCOUNT NO  : *****1234
+
+
+  SOURCE DOC                        PURCHASE ORDER                    PAYMENT    FUNCTIONAL
+  NUMBER                            NUMBER                            NUMBER     AREA        USER          AMOUNT
+ ---------------------------------------------------------------------------------------------------------------------------------
+  ITS-LOGIS-001                      ORDER-00024                        5087       CL          27856304                    3,000.00
+                                                                                                          ------------------------
+                                                                             TOTAL                       3,000.00
+                                                                                                          ------------------------
+
+PAYMENT WAS RE-ROUTED TO A CREDIT TRANSFER.   NEW ACTION DATE: 15/04/2026.  DISBURSEMENT NUMBER:     1199.
+
+                                                  **** END OF REPORT RP007LS ****
+
+

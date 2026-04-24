@@ -1,0 +1,29 @@
+                                                                BAS                                              DATE: 05/05/2025
+20001                                                   NAT: HOME AFFAIRS                                        TIME: 01:42:54
+RP107BS                                                    PAYMENT STUB                                          PAGE     1
+
+ CONTACT PERSON          : MS M KABINI / MS MAZWI                                  CONTACT TEL NO : 012 406 2772 / 2764
+ INSTALLATION DESCRIPTION: NAT: HOME AFFAIRS                                       DISBURSEMENT NO: 0001901198
+ LOCATION DESCRIPTION    : NAT: HOME AFFAIRS                                       ACTION DATE    : 29/01/2026
+
+
+ PAYEE NAME     : GEMINI MOON TRADING 7                                            BANK NAME   : STANDARD BANK OF SOUTH AFRICA
+ PAYMENT ADDRESS: ELECTION HOUSE                                                   BANK BRANCH : TSHWANE MID CITY
+                  RIVERSIDE OFFICE PARK                                            ACCOUNT TYPE: CURRENT
+                  1303 HEUWEL AVENUE                                               ACCOUNT NO  : *****0676
+                  CENTURION
+                  0157
+
+
+  SOURCE DOC                        PURCHASE ORDER                    PAYMENT    FUNCTIONAL
+  NUMBER                            NUMBER                            NUMBER     AREA        USER          AMOUNT
+ ---------------------------------------------------------------------------------------------------------------------------------
+  ITS-LOGIS-20260421                ORDER-00024                       5541       CL          27856303                    3,000.00
+                                                                                                          ------------------------
+                                                                                             TOTAL                       3,000.00
+                                                                                                          ------------------------
+
+PAYMENT WAS RE-ROUTED TO A CREDIT TRANSFER.   NEW ACTION DATE: 08/05/2025.  DISBURSEMENT NUMBER:     1089.
+
+                                                  **** END OF REPORT RP007BS ****
+                                              
